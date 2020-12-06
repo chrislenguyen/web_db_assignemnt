@@ -19,18 +19,22 @@ ajax.onreadystatechange = function () {
 			name = "";
 		} else {
 			state = LOGIN;
-			userType = data.role;
-			// name = "Welcome, manager!";
+			// console.log(data.name);
+			name = "Welcome, " + data.name + "!";
 		}
-		toggleTopNavbar(state);	
+		toggleTopNavbar(state, name);	
 	}
 };
 
-function toggleTopNavbar(state) {
+function toggleTopNavbar(state, name) {
 	var logout = document.getElementById("logout");
+	var username = document.getElementById("username");
 	if (state == LOGOUT) {
 		logout.style.display = "none";
+		username.style.display = "none";
 	} else {
 		logout.style.display = "block";
+		username.style.display = "block";
+		username.innerHTML = name;
 	}
 }

@@ -1,121 +1,38 @@
 <?php
 require_once('db_model.php');
 
-class User
-{
+class User {
     private $username;
-    private $userId;
-    private $role;
-    private $result = array();
+    private $password;
 }
 
-class UserModel extends DbModel
-{
-    public function signup($username, $password)
-    {
-        if ($username == '' || $password == '') {
+class UserModel extends DbModel {
+    public function login($username, $password) {
+        if ($username == "" || $password == "") {
+            echo "Nothing";
             return false;
         }
-        $conn = $this->connect();
-        $sql = "SELECT 
-                        *
-                    FROM 
-                        USERS 
-                    WHERE 
-                        username='$username'";
-        $res = mysqli_query($conn, $sql);
-        if (mysqli_num_rows($res) > 0) {
+        $conn = $this->connect($username, $password);
+        if (!$conn) {
+            die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
             return false;
         }
-        $query = "INSERT INTO 
-                        USERS (username, password) 
-                    VALUES 
-                        ('$username','" . md5($password) . "')";
-        mysqli_query($conn, $query);
-        return true;
-    }
-
-    public function login($username, $password)
-    {
-        if ($username == '' || $password == '') {
-            return false;
-        }
-        $conn = $this->connect();
-        $sql = 'SELECT 
-                        * 
-                    FROM 
-                        USERS
-                    WHERE 
-                        username = "' . $username . '" and password = "' . $password . '"';
-        $res = mysqli_query($conn, $sql);
-        if (mysqli_num_rows($res) > 0) {
-            $row = mysqli_fetch_assoc($res);
-            return $row;
-        } else {
-            return null;
-        }
-    }
-
-    public function addStaff($username, $password)
-    {
-        if ($username == '' || $password == '') {
-            return false;
-        }
-        $conn = $this->connect();
-        $sql = "SELECT 
-                        *
-                    FROM 
-                        USERS 
-                    WHERE 
-                        username='$username'";
-        $res = mysqli_query($conn, $sql);
-        if (mysqli_num_rows($res) > 0) {
-            return false;
-        }
-        $query = "INSERT INTO 
-                        USERS (username, password, role) 
-                    VALUES 
-                        ('$username','" . md5($password) . "','2')";
-        mysqli_query($conn, $query);
-        return true;
-    }
-
-
-
-    public function queryStaffList() {
-        $staffList = "";
-        $idx = 0;
-        $conn = $this->connect();
-        $sql = "SELECT 
-                    *
-                FROM 
-                    USERS
-                WHERE 
-                    role = '2'
-                ";
-        $res = mysqli_query($conn, $sql);
-        if (mysqli_num_rows($res) > 0) {
-            while ($row = mysqli_fetch_assoc($res)) {
-                $staffList= $staffList.'_'.$row["username"];
-           
-            }
-        }
-        return $staffList;
-    }
-
-    public function deleteStaff($username)
-    {   
-        if ($username == ''){
-            return false;
-        }
-        $conn = $this->connect();
-        $sql = "DELETE
-                FROM 
-                    USERS 
-                WHERE 
-                    username='$username'";
-        if (!mysqli_query($conn, $sql)) return false;
-        return true;
+         return true;
+        // echo "<br>" . $conn;
+        
+        // if ($conn) {
+            // echo "Connection established.<br />";
+            // $tsql= "SELECT * FROM hospital.EMPLOYEE"; 
+            // $getResults= sqlsrv_query($conn, $tsql);
+            // echo ("Reading data from table" . PHP_EOL);
+            // if ($getResults == FALSE)
+            // echo (sqlsrv_errors());
+            // while ($row = sqlsrv_fetch_array($getResults, SQLSRV_FETCH_ASSOC)) {
+            //     echo ($row['First_Name'] . " " . $row['Last_Name'] . PHP_EOL);
+            // }
+            // sqlsrv_free_stmt($getResults);
+            // return true;
+        // }
     }
 }
 ?>
