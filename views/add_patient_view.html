@@ -10,17 +10,17 @@
         <div class="p-5 mb-2 bg-light text-dark ">
             <div class="row justify-content-md-center">
                 <div class="col col-3 text-center">
-                    <input type="radio" value="1" id="inpatient" name="addOption" onclick="openInpatientForm()"/>
+                    <input type="radio" value="1" id="inpatient" name="addOption" onclick="openInpatientForm()" checked="checked"/>
                     <label style="font-size: 18px;">Inpatient</label>
                 </div>
                 <div class="col col-3 text-center">
-                    <input type="radio" value="2" id="outpatient" name="addOption" onclick="openOutpatientForm()" checked="checked"/> 
+                    <input type="radio" value="2" id="outpatient" name="addOption" onclick="openOutpatientForm()"/> 
                     <label style="font-size: 18px;">Outpatient</label>
                 </div>
             </div>
             <br>
 
-            <form id="addInpatientForm" style="display: none;" class="form-group p-5 mb-2 bg-white text-dark">
+            <form id="addInpatientForm" style="display: block;" class="form-group p-5 mb-2 bg-white text-dark">
                 <div class="row justify-content-md-center">
                     <label style="font-size: 25px;">Inpatient information form</label>
                 </div>
@@ -72,7 +72,7 @@
 
                     <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
                     style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Admission date</textarea>
-                    <input class="col" type="date" id="addmissionDate">
+                    <input class="col" type="date" id="admissionDate">
                 </div>
 
 
@@ -120,7 +120,7 @@
 
 
 
-            <form id="addOutpatientForm" style="display: block;" class="form-group p-5 mb-2 bg-white text-dark">
+            <form id="addOutpatientForm" style="display: none;" class="form-group p-5 mb-2 bg-white text-dark">
                 <div class="row justify-content-md-center">
                     <label style="font-size: 25px;">Outpatient information form</label>
                 </div>
@@ -215,9 +215,9 @@
 
                     <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
                     style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Amount</textarea>
-                    <input class="col col-1" type="text" id="amount">
+                    <input class="col col-1" type="number" min="1" id="amount">
 
-                    <div class="col col-1"></div>
+                    <div class="col col-2"></div>
 
                     <button id="btnAdd" type="button" class="btn btn-primary btn-block" style="width:80px; text-align:center;" onclick="getDrug()">Add</button>	
                 </div>
@@ -241,6 +241,7 @@
                     </table>
                 </div>
                 
+                <br>
                 <div class="row justify-content-md-center">
 					<button id="btnOut" type="button" class="btn btn-primary btn-block" style="width:150px; text-align:center;" onclick="submitOutpatienForm()">Submit</button>	
 				</div>	

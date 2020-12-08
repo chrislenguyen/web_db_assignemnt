@@ -81,7 +81,9 @@ class Drug {
 
 class PatientModel extends DbModel 
 {
-    public function queryGetPatientNameList($patientName, $name, $pass) {
+    public function queryGetPatientNameList(
+        $patientName, $name, $pass
+    ) {
         $conn = $this->connect($name, $pass);
         if (!$conn) {
             die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
@@ -107,20 +109,30 @@ class PatientModel extends DbModel
                     FROM 
                         hospital.INPATIENT
                     WHERE
-                        First_Name = '$patientName' 
+                        First_Name = ? 
                         OR 
-                        Last_Name LIKE '%$patientName%'
+                        Last_Name LIKE ?
                         OR 
-                        (First_Name = '$firstWord' AND Last_Name LIKE '%$lastStr%')
+                        (First_Name = ? AND Last_Name LIKE ?)
                         OR 
-                        (First_Name = '$lastWord' AND Last_Name LIKE '%$firstStr%')";
-            $getResults= sqlsrv_query($conn, $sql);
+                        (First_Name = ? AND Last_Name LIKE ?)
+                        OR 
+                        Patient_ID LIKE ?";
+
+            $stmt = sqlsrv_prepare($conn, $sql, array($patientName, "%$patientName", $firstWord, "%$lastStr%", $lastWord, "%$firstStr%", "$patientName%"));
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+
+            // $getResults= sqlsrv_query($conn, $sql);
 
             if ($getResults == FALSE) {
                 // echo json_encode(sqlsrv_errors());
                 // echo json_encode("WHY");
                 return false;
-            } while ($row = sqlsrv_fetch_array($getResults, SQLSRV_FETCH_ASSOC)) {
+            } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 $patient = new Patient();
                 $patient->setpId($row['Patient_ID']);
                 $patient->setFName($row['First_Name']);
@@ -128,28 +140,37 @@ class PatientModel extends DbModel
                 $patient->setPhone($row['Phone']);
                 $patientList[] = $patient;
             }
-            sqlsrv_free_stmt($getResults);
+            // sqlsrv_free_stmt($getResults);
 
             $sql= "SELECT 
                         * 
                     FROM 
                         hospital.OUTPATIENT
                     WHERE
-                        First_Name = '$patientName' 
+                        First_Name = ? 
                         OR 
-                        Last_Name LIKE '%$patientName%'
+                        Last_Name LIKE ?
                         OR 
-                        (First_Name = '$firstWord' AND Last_Name LIKE '%$lastStr%')
+                        (First_Name = ? AND Last_Name LIKE ?)
                         OR 
-                        (First_Name = '$lastWord' AND Last_Name LIKE '%$firstStr%')"; 
-            $getResults= sqlsrv_query($conn, $sql);
-            // echo ("Reading data from table" . PHP_EOL);
+                        (First_Name = ? AND Last_Name LIKE ?)
+                        OR 
+                        Patient_ID LIKE ?";
+
+            $stmt = sqlsrv_prepare($conn, $sql, array($patientName, "%$patientName%", $firstWord, "%$lastStr%", $lastWord, "%$firstStr%", "$patientName%"));
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+
+            // $getResults= sqlsrv_query($conn, $sql);
+
             if ($getResults == FALSE) {
-                // echo (sqlsrv_errors());
                 // echo json_encode(sqlsrv_errors());
                 // echo json_encode("WHY");
                 return false;
-            } while ($row = sqlsrv_fetch_array($getResults, SQLSRV_FETCH_ASSOC)) {
+            } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 $patient = new Patient();
                 $patient->setpId($row['Patient_ID']);
                 $patient->setFName($row['First_Name']);
@@ -157,13 +178,15 @@ class PatientModel extends DbModel
                 $patient->setPhone($row['Phone']);
                 $patientList[] = $patient;
             }
-            sqlsrv_free_stmt($getResults);
+            // sqlsrv_free_stmt($getResults);
 
             return $patientList;
         }
     }
 
-    public function queryGetDrugList($name, $pass) {
+    public function queryGetDrugList(
+        $name, $pass
+    ) {
         $conn = $this->connect($name, $pass);
         if (!$conn) {
             die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
@@ -177,14 +200,20 @@ class PatientModel extends DbModel
                         hospital.MEDICATION
                     ORDER BY 
                         Name"; 
-            $getResults= sqlsrv_query($conn, $sql);
+            // $getResults= sqlsrv_query($conn, $sql);
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
             // echo ("Reading data from table" . PHP_EOL);
             if ($getResults == FALSE) {
                 // echo (sqlsrv_errors());
                 // echo json_encode(sqlsrv_errors());
                 // echo json_encode("WHY");
                 return false;
-            } while ($row = sqlsrv_fetch_array($getResults, SQLSRV_FETCH_ASSOC)) {
+            } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 $drug = new Drug();
                 $drug->setDrugCode($row['Drug_Code']);
                 $drug->setName($row['Name']);
@@ -192,13 +221,72 @@ class PatientModel extends DbModel
                 $drug->setPrice($row['Price']);
                 $drugList[] = $drug;
             }
-            sqlsrv_free_stmt($getResults);
+            // sqlsrv_free_stmt($getResults);
 
             return $drugList;
         }
     }
 
-    public function queryGetDrugByCode($code, $name, $pass) {
+    public function callProcAddNewInPatient(
+        $name, 
+        $pass,
+        $fName,
+        $lName,
+        $dob,
+        $addr,
+        $gender,
+        $phone,
+        $date,
+        $nurseId,
+        $doctorId,
+        $room,
+        $fee,
+        $diagnosis
+    ) {
+        $conn = $this->connect($name, $pass);
+        if (!$conn) {
+            die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
+            return false;
+        } else {
+            $sql= "EXEC hospital.NewInpatient 
+                        @First_Name = '$fName',
+                        @Last_Name = '$lName',
+                        @Date_Of_Birth ='$dob',
+                        @Gender ='$gender',
+                        @Address = '$addr',
+                        @Phone = '$phone',
+                        @Nurse_ID = '$nurseId',
+                        @Admission_Date = '$date',
+                        @Sickroom = '$room',
+                        @Diagnosis = '$diagnosis',
+                        @Fee = '$fee',
+                        @Doctor_ID = '$doctorId'"; 
+
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+            // echo ("Reading data from table" . PHP_EOL);
+            if ($getResults == FALSE) {
+                die (print_r( sqlsrv_errors(), true));
+                // echo json_encode(sqlsrv_errors());
+                // echo json_encode("WHY");
+                return false;
+            }
+            // echo "OK";
+            return true;
+        }
+    }
+    
+
+
+    public function queryGetDrugByCode(
+        $code, 
+        $name, 
+        $pass
+    ) {
         $conn = $this->connect($name, $pass);
         if (!$conn) {
             die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
@@ -229,7 +317,7 @@ class PatientModel extends DbModel
             }
             sqlsrv_free_stmt($getResults);
 
-            echo $drugList;
+            // echo $drugList;
 
             return $drugList;
         }

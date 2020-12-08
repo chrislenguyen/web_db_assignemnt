@@ -3,8 +3,11 @@ var method = "GET";
 var url = "controllers/database_ptj.php?";
 var asynchronous = true;
 
+var patientList;
+
 function setUp() {
     activeSearchNav();
+    search("");
 }
 
 function activeSearchNav() {
@@ -12,7 +15,7 @@ function activeSearchNav() {
     search.classList.add("active");
 }
 
-function showPatient(patientList) {
+function showPatient() {
     var tableBody = document.getElementById("patientInfo");
 
     for (var index in patientList) {
@@ -67,8 +70,25 @@ function showPatient(patientList) {
         phone_text.setAttribute("cols", "10");
         phone_text.defaultValue = patientList[index].phone;
         phone.appendChild(phone_text);
+
+        // Insert a cell in the row
+        var view = newRow.insertCell(4);
+        view.setAttribute("style", "width:10px; text-align: center;");
+        view.setAttribute("id", index);
+        var viewButton = document.createElement("button");
+        viewButton.setAttribute("type", "button");
+        viewButton.setAttribute("class", "form-control btn btn-light fa fa-user-circle");
+        viewButton.onclick = function () {
+            viewPatientInfo(view.getAttribute("id"));
+        };
+        view.appendChild(viewButton);
     }
     document.getElementById("patientForm").style.display = "block";
+}
+
+function viewPatientInfo(index) {
+    console.log(patientList[index].pId);
+    clearPatientList();
 }
 
 function clearPatientList() {
@@ -80,7 +100,7 @@ function clearPatientList() {
 }
 
 function search(key) {
-    var dataStr = "function=search&data=" + key;
+    var dataStr = "function=searchPatient&data=" + key;
     ajax.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             // var data = JSON.parse(this.responseText);
@@ -89,7 +109,8 @@ function search(key) {
             if (this.responseText != false) {
                 var data = JSON.parse(this.responseText);
                 clearPatientList();
-                showPatient(data);
+                patientList = data;
+                showPatient();
             }
         }
     };

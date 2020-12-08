@@ -16,17 +16,57 @@ function activeAddNav() {
 }
 
 function openInpatientForm() {
+    resetTable();
     document.getElementById("addInpatientForm").style.display = "block";
     document.getElementById("addOutpatientForm").style.display = "none";
+    document.getElementById("addOutpatientForm").reset();
 }
 
 function openOutpatientForm() {
+    resetTable();
     document.getElementById("addOutpatientForm").style.display = "block";
     document.getElementById("addInpatientForm").style.display = "none";
+    document.getElementById("addInpatientForm").reset();
 }
 
 function submitInpatienForm() {
+    var fName = document.getElementById("fNameIn").value;
+    var lName = document.getElementById("lNameIn").value;
+    var dob = new Date(document.getElementById("birthdateIn").value);
+    // console.log(dob.getDate());
+    // console.log(dob.getMonth());
+    // console.log(dob.getFullYear());
+    var addr = document.getElementById("addrIn").value;
+    var gender = (document.getElementById("genderIn").value == 1) ? "m" : "f";
+    var phone = document.getElementById("phoneIn").value;
+    var date = new Date(document.getElementById("admissionDate").value);
+    var nurseId = Number(document.getElementById("nurseId").value);
+    var doctorId = Number(document.getElementById("doctorId").value);
+    var room = document.getElementById("room").value;
+    var fee = document.getElementById("feeIn").value;
+    var diagnosis = document.getElementById("diagnosisIn").value;
 
+    var validatePhone = phone.match(/^\d{10}$/) || phone.match(/^\d{11}$/);
+    var validateId = Number.isInteger(nurseId) && Number.isInteger(doctorId);
+    var validateFee = !isNaN(parseFloat(Number(fee)));
+    var validateDob = (dob < new Date()) ? 1 : 0;
+    var validateDate = (date < new Date()) ? 1 : 0;
+    // console.log(validateDate);
+    if (validateId && validateFee && validatePhone && validateDob && validateDate) {
+        var dataStr = "&fName=" + fName + 
+            "&lName=" + lName +
+            "&dob=" + dob.getMonth() + "-" + dob.getDate() + "-" + dob.getFullYear() +
+            "&addr=" + addr +
+            "&gender=" + gender +
+            "&phone=" + phone +
+            "&date=" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear() +  
+            "&nurseId=" + nurseId + 
+            "&doctorId=" + doctorId + 
+            "&room=" + room + 
+            "&fee=" + fee +
+            "&diagnosis=" + diagnosis;
+            addInpatient(dataStr);
+    }
 }
 
 function submitOutpatienForm() {
@@ -81,7 +121,7 @@ function getDrug() {
             name_text.setAttribute("aria-lable", "With textarea");
             name_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
             name_text.setAttribute("rows", "1");
-            name_text.setAttribute("cols", "3");
+            name_text.setAttribute("cols", "2");
             name_text.defaultValue = drugName;
             name.appendChild(name_text);
 
@@ -92,8 +132,8 @@ function getDrug() {
             effects_text.setAttribute("class", "form-control text-dark");
             effects_text.setAttribute("aria-lable", "With textarea");
             effects_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
-            effects_text.setAttribute("rows", "1");
-            effects_text.setAttribute("cols", "10");
+            effects_text.setAttribute("rows", "2");
+            effects_text.setAttribute("cols", "11");
             effects_text.defaultValue = drugEffects;
             effects.appendChild(effects_text);
 
@@ -106,7 +146,7 @@ function getDrug() {
             price_text.setAttribute("aria-lable", "With textarea");
             price_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
             price_text.setAttribute("rows", "1");
-            price_text.setAttribute("cols", "5");
+            price_text.setAttribute("cols", "2");
             price_text.defaultValue = drugPrice;
             price.appendChild(price_text);
 
@@ -140,6 +180,7 @@ function getDrug() {
     }
 } 
 
+
 function removeDrug(id) {
     console.log(id);
 	var drugBody = document.getElementById("drugInfo");
@@ -148,6 +189,14 @@ function removeDrug(id) {
             drugBody.deleteRow(i);
             break;
         }
+	}
+}
+
+function resetTable() {
+    var drugBody = document.getElementById("drugInfo");
+    document.getElementById("drugForm").style.display = "none";
+	for (var i = drugBody.rows.length - 1; i >= 0; i--) {
+        drugBody.deleteRow(i);
 	}
 }
 
@@ -162,6 +211,21 @@ function getDrugList() {
             // console.log(data);
             drugList = data;
             showDrugList(drugList);
+        }
+    }
+    ajax.open(method, url + request, asynchronous);
+    ajax.send();
+}
+
+function addInpatient(dataStr) {
+    var request = "function=addInpatient" + dataStr;
+
+    ajax.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var result = this.responseText;
+            console.log(result);
+            // var data = JSON.parse(result);
+            // console.log(data);
         }
     }
     ajax.open(method, url + request, asynchronous);
