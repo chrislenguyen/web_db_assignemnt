@@ -13,13 +13,15 @@ ajax.send();
 ajax.onreadystatechange = function () {
 	if (this.readyState == 4 && this.status == 200) {
 		var data = JSON.parse(this.responseText);
-		if (!data) {
+		// console.log("TEST");
+		// console.log(data);
+		if (!data || data.name == "") {
 			state = LOGOUT;
 			userType = 0;
 			name = "";
 		} else {
 			state = LOGIN;
-			// console.log(data.name);
+			// console.log("MET" + data.name);
 			name = "Welcome, " + data.name + "!";
 		}
 		toggleTopNavbar(state, name);	
@@ -32,6 +34,7 @@ function toggleTopNavbar(state, name) {
 	if (state == LOGOUT) {
 		logout.style.display = "none";
 		username.style.display = "none";
+		username.innerHTML = "";
 	} else {
 		logout.style.display = "block";
 		username.style.display = "block";

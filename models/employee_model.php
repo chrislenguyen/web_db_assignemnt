@@ -1,5 +1,6 @@
 <?php
 require_once('../models/db_model.php');
+
 class Employee {
     private $eId;
     private $fName;
@@ -31,7 +32,7 @@ class Employee {
 }
 
 class Doctor extends Employee {
-
+    private $patientList;
 }
 
 class DoctorModel extends DbModel {

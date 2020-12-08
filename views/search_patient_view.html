@@ -5,15 +5,30 @@
 	<script src="views/js/search_patient_view.js"></script>
 </head>
 
-<body onload="activeSearchNav()">
+<body onload="setUp()">
 	<div class="container content">
         <div class="p-5 mb-2 bg-light text-dark">
             <form class="form-inline md-form mr-auto mb-4 justify-content-md-center">
-                <textarea onkeyup=search(this.value) class="form-control mr-sm-2" type="text" style="resize:none;" rows="1" cols="60" placeholder="Search patient..." aria-label="Search"></textarea>
-                <button class="btn btn-primary btn-rounded btn-sm my-0" type="button">Search</button>
-            </form>
+                <input id="searchInput" onkeypress="return event.keyCode != 13;" onkeyup="search(this.value)" class="col col-3 form-control mr-sm-2" type="text" placeholder="Search patient..." aria-label="Search">
+                <button id="searchBtn" class="btn btn-primary btn-rounded btn-sm my-0" type="button">Search</button>
+            </form> 
+
+            <div id="patientForm" style="display:none;" class="p-3 mb-2 bg-white text-dark">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">ID</th>
+                            <th scope="col">First name</th>
+                            <th scope="col">Last name</th>
+                            <th scope="col">Phone number</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="patientInfo">
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div id="demo"></div>
     </div>
 </body> 
 </html>

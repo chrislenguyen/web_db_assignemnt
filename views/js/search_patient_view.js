@@ -3,17 +3,94 @@ var method = "GET";
 var url = "controllers/database_ptj.php?";
 var asynchronous = true;
 
+function setUp() {
+    activeSearchNav();
+}
+
 function activeSearchNav() {
     var search = document.getElementById("search");
     search.classList.add("active");
+}
+
+function showPatient(patientList) {
+    var tableBody = document.getElementById("patientInfo");
+
+    for (var index in patientList) {
+        // Insert a row at the end of the table
+        var newRow = tableBody.insertRow(-1);
+        // newRow.setAttribute("class", "text-center");
+
+        // Insert a cell in the row
+        var id = newRow.insertCell(0);
+        var id_text = document.createElement("textarea");
+        id_text.setAttribute("readOnly", "true");
+        id_text.setAttribute("class", "form-control text-dark text-center");
+		id_text.setAttribute("aria-lable", "With textarea");
+		id_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
+		id_text.setAttribute("rows", "1");
+        id_text.setAttribute("cols", "5");
+        id_text.defaultValue = patientList[index].pId;
+        id.appendChild(id_text);
+
+        // Insert a cell in the row
+        var fName = newRow.insertCell(1);
+        var fName_text = document.createElement("textarea");
+        fName_text.setAttribute("readOnly", "true");
+        fName_text.setAttribute("class", "form-control text-dark text-center");
+		fName_text.setAttribute("aria-lable", "With textarea");
+		fName_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
+		fName_text.setAttribute("rows", "1");
+        fName_text.setAttribute("cols", "5");
+        fName_text.defaultValue = patientList[index].fName;
+        fName.appendChild(fName_text);
+
+        // Insert a cell in the row
+        var lName = newRow.insertCell(2);
+        var lName_text = document.createElement("textarea");
+        lName_text.setAttribute("readOnly", "true");
+        lName_text.setAttribute("class", "form-control text-dark text-center");
+		lName_text.setAttribute("aria-lable", "With textarea");
+		lName_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
+		lName_text.setAttribute("rows", "1");
+        lName_text.setAttribute("cols", "15");
+        lName_text.defaultValue = patientList[index].lName;
+        lName.appendChild(lName_text);
+        
+        // Insert a cell in the row
+        var phone = newRow.insertCell(3);
+        var phone_text = document.createElement("textarea");
+        phone_text.setAttribute("readOnly", "true");
+        phone_text.setAttribute("class", "form-control text-dark text-center");
+		phone_text.setAttribute("aria-lable", "With textarea");
+		phone_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
+		phone_text.setAttribute("rows", "1");
+        phone_text.setAttribute("cols", "10");
+        phone_text.defaultValue = patientList[index].phone;
+        phone.appendChild(phone_text);
+    }
+    document.getElementById("patientForm").style.display = "block";
+}
+
+function clearPatientList() {
+    document.getElementById("patientForm").style.display = "none";
+    var tableBody = document.getElementById("patientInfo");
+    for (var i = tableBody.rows.length - 1; i >= 0; i--) {
+        tableBody.deleteRow(i);
+    }
 }
 
 function search(key) {
     var dataStr = "function=search&data=" + key;
     ajax.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-            var data = JSON.parse(this.responseText);
-            console.log(data);	
+            // var data = JSON.parse(this.responseText);
+            // console.log(data);	
+            console.log(this.responseText);
+            if (this.responseText != false) {
+                var data = JSON.parse(this.responseText);
+                clearPatientList();
+                showPatient(data);
+            }
         }
     };
     ajax.open(method, url + dataStr, asynchronous);
