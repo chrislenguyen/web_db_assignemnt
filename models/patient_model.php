@@ -322,4 +322,81 @@ class PatientModel extends DbModel
             return $drugList;
         }
     }
+
+    public function queryGetPatientsByDoctorId($name, $pass, $dId) {
+        $conn = $this->connect($name, $pass);
+        if (!$conn) {
+            die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
+            return false;
+        } else {
+            $sql= " SELECT 
+                        p.Patient_ID, p.First_Name, p.Last_Name, p.Phone, p.Address, p.Gender, p.Date_Of_Birth, 
+                        f.Exam_Date, f.Second_Exam_Date, f.Diagnosis, f.Fee, f.Name, f.Amount, f.Price, f.Expiration_Date, f.Out_Date
+                    FROM 
+                        hospital.OUTPATIENT p
+                    INNER JOIN 
+                    (
+                        SELECT 
+                            c.Patient_ID, e.Exam_Date, e.Second_Exam_Date, e.Diagnosis, e.Fee, c.Name, c.Amount, c.Effects, c.Price, c.Expiration_Date, c.Out_Date 
+                        FROM 
+                            hospital.EXAMINATION e
+                        INNER JOIN 
+                        (
+                            SELECT 
+                                m.Patient_ID, m.Exam_ID, e_m.Name, m.Amount, e_m.Effects, e_m.Price, e_m.Expiration_Date, e_m.Out_Date
+                            FROM 
+                            hospital.MEDICATION e_m 
+                            INNER JOIN 
+                                hospital.EXAMINATION_MEDICATION m 
+                            ON 
+                                e_m.Drug_Code = m.Drug_Code
+                        ) c
+                        ON 
+                            e.Patient_ID = c.Patient_ID AND e.Exam_ID = c.Exam_ID 
+                        WHERE 
+                            e.Doctor_Exam_ID = '$dId'
+                    ) f
+                    ON 
+                        f.Patient_ID = p.Patient_ID" ; 
+            $result = array();
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+            // echo ("Reading data from table" . PHP_EOL);
+            if ($getResults == FALSE) {
+                die (print_r( sqlsrv_errors(), true));
+                // echo json_encode(sqlsrv_errors());
+                // echo json_encode("WHY");
+                return false;
+            } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                // echo implode($row);
+                $result[] = array (
+                    "pId" => $row['Patient_ID'],
+                    "fName" => $row['First_Name'],
+                    "lName" => $row['Last_Name'],
+                    "phone" => $row['Phone'],
+                    "addr" => $row['Address'],
+                    "gender" => $row['Gender'],
+                    "dob" => $row['Date_Of_Birth'],
+                    "examDate" => $row['Exam_Date'],
+                    "secondDate" => $row['Second_Exam_Date'],
+                    "diagnosis" => $row['Diagnosis'],
+                    "fee" => $row['Fee'],
+                    "name" => $row['Name'],
+                    "amount" => $row['Amount'],
+                    "price" => $row['Price'],
+                    "exDate" => $row['Expiration_Date']
+                );
+            }
+            if (sizeof($result) < 1) {
+                return false;
+            }
+            return $result;
+            // return true;
+            // return $doctorList;
+        }
+    }
 }

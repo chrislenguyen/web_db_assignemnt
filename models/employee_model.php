@@ -48,7 +48,9 @@ class DoctorModel extends DbModel {
                     FROM 
                         hospital.EMPLOYEE
                     WHERE
-                        Job_Type = 'd' AND Employee_ID > 0" ; 
+                        Job_Type = 'd' AND Employee_ID > 0
+                    ORDER BY
+                        First_Name" ; 
             $getResults= sqlsrv_query($conn, $sql);
             // echo ("Reading data from table" . PHP_EOL);
             $doctorList = array();

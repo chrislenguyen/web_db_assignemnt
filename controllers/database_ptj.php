@@ -85,7 +85,20 @@
         } else {
             echo false;
         }
-    } else {
+    } elseif ($_REQUEST["function"] == "getPatientByDoctor") {
+        $patientModel = new PatientModel();
+        $result = $patientModel->queryGetPatientsByDoctorId(
+            $_SESSION["name"], 
+            $_SESSION["pass"],
+            $_REQUEST["dId"]
+            );
+        
+        if ($result != false) {
+            echo json_encode($result);
+        } else {
+            echo false;
+        }
+    }else {
         echo json_encode("nothing");
     }
 

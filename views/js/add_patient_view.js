@@ -30,47 +30,92 @@ function openOutpatientForm() {
 }
 
 function submitInpatienForm() {
-    var fName = document.getElementById("fNameIn").value;
-    var lName = document.getElementById("lNameIn").value;
-    var dob = new Date(document.getElementById("birthdateIn").value);
-    // console.log(dob.getDate());
-    // console.log(dob.getMonth());
-    // console.log(dob.getFullYear());
-    var addr = document.getElementById("addrIn").value;
-    var gender = (document.getElementById("genderIn").value == 1) ? "m" : "f";
-    var phone = document.getElementById("phoneIn").value;
-    var date = new Date(document.getElementById("admissionDate").value);
-    var nurseId = Number(document.getElementById("nurseId").value);
-    var doctorId = Number(document.getElementById("doctorId").value);
-    var room = document.getElementById("room").value;
-    var fee = document.getElementById("feeIn").value;
-    var diagnosis = document.getElementById("diagnosisIn").value;
+    var decision = confirm("ARE YOU SURE?");
 
-    var validatePhone = phone.match(/^\d{10}$/) || phone.match(/^\d{11}$/);
-    var validateId = Number.isInteger(nurseId) && Number.isInteger(doctorId);
-    var validateFee = !isNaN(parseFloat(Number(fee)));
-    var validateDob = (dob < new Date()) ? 1 : 0;
-    var validateDate = (date < new Date()) ? 1 : 0;
-    // console.log(validateDate);
-    if (validateId && validateFee && validatePhone && validateDob && validateDate) {
-        var dataStr = "&fName=" + fName + 
-            "&lName=" + lName +
-            "&dob=" + dob.getMonth() + "-" + dob.getDate() + "-" + dob.getFullYear() +
-            "&addr=" + addr +
-            "&gender=" + gender +
-            "&phone=" + phone +
-            "&date=" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear() +  
-            "&nurseId=" + nurseId + 
-            "&doctorId=" + doctorId + 
-            "&room=" + room + 
-            "&fee=" + fee +
-            "&diagnosis=" + diagnosis;
-            addInpatient(dataStr);
+    if (decision) {
+        var fName = document.getElementById("fNameIn").value;
+        var lName = document.getElementById("lNameIn").value;
+        var dob = new Date(document.getElementById("birthdateIn").value);
+        var addr = document.getElementById("addrIn").value;
+        var gender = (document.getElementById("genderIn").value == 1) ? "m" : "f";
+        var phone = document.getElementById("phoneIn").value;
+        var date = new Date(document.getElementById("admissionDate").value);
+        var nurseId = Number(document.getElementById("nurseId").value);
+        var doctorId = Number(document.getElementById("doctorId").value);
+        var room = document.getElementById("room").value;
+        var fee = document.getElementById("feeIn").value;
+        var diagnosis = document.getElementById("diagnosisIn").value;
+
+        var validatePhone = phone.match(/^\d{10}$/) || phone.match(/^\d{11}$/);
+        var validateId = Number.isInteger(nurseId) && Number.isInteger(doctorId);
+        var validateFee = !isNaN(parseFloat(Number(fee)));
+        var validateDob = (dob < new Date()) ? 1 : 0;
+        var validateDate = (date < new Date()) ? 1 : 0;
+        // console.log(validateDate);
+
+        if (fName == "" || lName == "" || addr == "" || room == "" || diagnosis == "" || nurseId == "" || doctorId == "" || fee == "") {
+            alert("Please fill all the information!");
+        }
+        else if (validateId && validateFee && validatePhone && validateDob && validateDate) {
+            var dataStr = "&fName=" + fName + 
+                "&lName=" + lName +
+                "&dob=" + dob.getMonth() + "-" + dob.getDate() + "-" + dob.getFullYear() +
+                "&addr=" + addr +
+                "&gender=" + gender +
+                "&phone=" + phone +
+                "&date=" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear() +  
+                "&nurseId=" + nurseId + 
+                "&doctorId=" + doctorId + 
+                "&room=" + room + 
+                "&fee=" + fee +
+                "&diagnosis=" + diagnosis;
+                addInpatient(dataStr);
+        } else {
+            alert("Please check your information");
+        }
     }
 }
 
 function submitOutpatienForm() {
+    var decision = confirm("ARE YOU SURE?");
 
+    if (decision) {
+        var fName = document.getElementById("fNameOut").value;
+        var lName = document.getElementById("lNameOut").value;
+        var dob = new Date(document.getElementById("birthdateOut").value);
+        var addr = document.getElementById("addrOut").value;
+        var gender = (document.getElementById("genderOut").value == 1) ? "m" : "f";
+        var phone = document.getElementById("phoneOut").value;
+        var examDate = new Date(document.getElementById("examDate").value);
+        var secondDate = new Date(document.getElementById("secondDate").value);
+        var doctorExamId = Number(document.getElementById("doctorExamId").value);
+        var fee = document.getElementById("feeOut").value;
+        var diagnosis = document.getElementById("diagnosisOut").value;
+
+        var validatePhone = phone.match(/^\d{10}$/) || phone.match(/^\d{11}$/);
+        var validateId = Number.isInteger(doctorExamId);
+        var validateFee = !isNaN(parseFloat(Number(fee)));
+        var validateDob = (dob < new Date()) ? 1 : 0;
+        var validateDate = (examDate < new Date() && secondDate < new Date()) ? 1 : 0;
+        // console.log(validateDate);
+        
+        if (validateId && validateFee && validatePhone && validateDob && validateDate) {
+            var dataStr = 
+                "&fName=" + fName + 
+                "&lName=" + lName +
+                "&dob=" + dob.getMonth() + "-" + dob.getDate() + "-" + dob.getFullYear() +
+                "&addr=" + addr +
+                "&gender=" + gender +
+                "&phone=" + phone +
+                "&examDate=" + examDate.getMonth() + "-" + examDate.getDate() + "-" + examDate.getFullYear() + 
+                "&secondDate=" + secondDate.getMonth() + "-" + secondDate.getDate() + "-" + secondDate.getFullYear() +  
+                "&doctorId=" + doctorExamId + 
+                "&fee=" + fee +
+                "&diagnosis=" + diagnosis;
+        } else {
+            alert("Please check your information");
+        }
+    }
 }
 
 function showDrugList(drugList) {
@@ -224,6 +269,12 @@ function addInpatient(dataStr) {
         if (this.readyState == 4 && this.status == 200) {
             var result = this.responseText;
             console.log(result);
+            if (result) {
+                alert("Add inpatient success");
+                document.getElementById("addInpatientForm").reset();
+            } else {
+                alert("Add inpatient failed");
+            }
             // var data = JSON.parse(result);
             // console.log(data);
         }
