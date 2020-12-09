@@ -85,6 +85,43 @@
         } else {
             echo false;
         }
+    } elseif ($_REQUEST["function"] == "addOutpatient") {
+        $patientModel = new PatientModel();
+        $result = $patientModel->callProcAddNewOutPatient(
+            $_SESSION["name"], 
+            $_SESSION["pass"],
+            $_REQUEST["fName"],
+            $_REQUEST["lName"],
+            $_REQUEST["dob"],
+            $_REQUEST["addr"],
+            $_REQUEST["gender"],
+            $_REQUEST["phone"],
+            $_REQUEST["examDate"],
+            $_REQUEST["secondDate"],
+            $_REQUEST["doctorId"],
+            $_REQUEST["fee"],
+            $_REQUEST["diagnosis"]
+        );
+        if ($result == false) {
+            echo false;
+        } else {
+            echo json_encode($result);
+        }
+    } elseif ($_REQUEST["function"] == "addDrug") {
+        $patientModel = new PatientModel();
+        $result = $patientModel->callProcNewTExaminationMedication(
+            $_SESSION["name"], 
+            $_SESSION["pass"],
+            $_REQUEST["pId"],
+            $_REQUEST["examId"],
+            $_REQUEST["code"],
+            $_REQUEST["amount"]
+        );
+        if ($result == true) {
+            echo true;
+        } else {
+            echo false;
+        }
     } elseif ($_REQUEST["function"] == "getPatientByDoctor") {
         $patientModel = new PatientModel();
         $result = $patientModel->queryGetPatientsByDoctorId(

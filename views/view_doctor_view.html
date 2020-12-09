@@ -9,20 +9,25 @@
 	<div class="container content">
         <div class="p-5 mb-2 bg-light text-dark">
             <div class="row justify-content-md-center">
-                <div class="col col-1 text-center">Doctor:</div>
+                <textarea class="col col-1 bg-light text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; font-size: 18px;">Doctor:</textarea>
                 <div class="col col-3 text-center">
                     <select onchange="openPatientList()" class="custom-select custom-select-sm" name="doctorList" id="doctorList" required>
                         <option value=""></option>
                     </select>
                 </div>
             </div>
+            <br>
+            
 
-            <div id="patientForm" style="display: block;" class="p-3 mb-2 bg-white text-dark">
+            <div id="patientForm" style="display: none;" class="p-3 mb-2 bg-white text-dark">
+                <div class="row justify-content-md-center" style="font-size: 20px;">Information of treated patients</div> 
+                <br>
                 <table class="table table-bordered">
                     <thead>
                         <tr class="text-center">
                             <th scope="col">ID</th>
-                            <th scope="col"></th>
+                            <th scope="col">Infomation</th>
                             <th scope="col">Description</th>
                         </tr>
                     </thead>

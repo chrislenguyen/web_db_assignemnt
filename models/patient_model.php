@@ -281,6 +281,121 @@ class PatientModel extends DbModel
     }
     
 
+    public function callProcAddNewOutPatient(
+        $name, 
+        $pass,
+        $fName,
+        $lName,
+        $dob,
+        $addr,
+        $gender,
+        $phone,
+        $examDate,
+        $secondDate,
+        $doctorId,
+        $fee,
+        $diagnosis
+    ) {
+        $conn = $this->connect($name, $pass);
+        if (!$conn) {
+            die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
+            return false;
+        } else {
+            $sql= "EXEC hospital.NewOutPatient 
+                        @First_Name = '$fName'
+                        ,@Last_Name = '$lName'
+                        ,@Phone = '$phone'
+                        ,@Address = '$addr'
+                        ,@Gender = '$gender'
+                        ,@Date_Of_Birth = '$dob'
+                        ,@Doctor_Exam_ID = '$doctorId'
+                        ,@Exam_Date = '$examDate'
+                        ,@Second_Exam_Date = '$secondDate'
+                        ,@Diagnosis = '$diagnosis'
+                        ,@Fee = '$fee'"; 
+
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+            // echo ("Reading data from table" . PHP_EOL);
+            if ($getResults == FALSE) {
+                die (print_r( sqlsrv_errors(), true));
+                // echo json_encode(sqlsrv_errors());
+                // echo json_encode("WHY");
+                return false;
+            }
+
+
+            $sql = "SELECT 
+                        MAX(Patient_ID) AS Max
+                    FROM
+                        hospital.OUTPATIENT
+                    WHERE 
+                        First_Name = '$fName' AND Last_Name = '$lName'";
+
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+            // echo ("Reading data from table" . PHP_EOL);
+            if ($getResults == FALSE) {
+                die (print_r( sqlsrv_errors(), true));
+                // echo json_encode(sqlsrv_errors());
+                // echo json_encode("WHY");
+                return false;
+            }  
+            $result = array();
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $result[] = $row['Max'];
+            }
+            if (sizeof($result) != 1) {
+                return false;
+            }
+            // echo "OK";
+            return $result[0];
+        }
+    }
+
+    public function callProcNewTExaminationMedication(
+        $name,
+        $pass,
+        $pId,
+        $eId,
+        $code,
+        $amount
+    ) {
+        $conn = $this->connect($name, $pass);
+        if (!$conn) {
+            die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
+            return false;
+        } else {
+            $sql = "EXEC hospital.NewTExaminationMedication
+                        @Patient_ID = '$pId'
+                        ,@Exam_ID = '$eId'
+                        ,@Drug_Code = '$code'
+                        ,@Amount = '$amount'"; 
+
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+            // echo ("Reading data from table" . PHP_EOL);
+            if ($getResults == FALSE) {
+                die (print_r( sqlsrv_errors(), true));
+                // echo json_encode(sqlsrv_errors());
+                // echo json_encode("WHY");
+                return false;
+            } 
+            return true;
+        }
+    }
 
     public function queryGetDrugByCode(
         $code, 
@@ -392,7 +507,7 @@ class PatientModel extends DbModel
                 );
             }
             if (sizeof($result) < 1) {
-                return false;
+                return -1;
             }
             return $result;
             // return true;
