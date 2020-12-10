@@ -9,8 +9,8 @@
 	<div class="container content">
         <div class="p-5 mb-2 bg-light text-dark">
             <form class="form-inline md-form mr-auto mb-4 justify-content-md-center">
-                <input id="searchInput" onkeypress="return event.keyCode != 13;" onkeyup="search(this.value)" class="col col-3 form-control mr-sm-2" type="text" placeholder="Search patient..." aria-label="Search">
-                <button id="searchBtn" class="btn btn-primary btn-rounded btn-sm my-0" type="button">Search</button>
+                <input id="searchInput" onkeypress="return event.keyCode != 13;" onkeyup="search()" class="col col-3 form-control mr-sm-2" type="text" placeholder="Search patient..." aria-label="Search">
+                <button id="searchBtn" class="btn btn-primary btn-rounded btn-sm my-0" type="button" onclick="search()">Search</button>
             </form> 
 
             <div id="patientListForm" style="display:none;" class="p-3 mb-2 bg-white text-dark">

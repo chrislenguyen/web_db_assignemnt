@@ -218,7 +218,9 @@ function clearPatientInfo() {
     }
 }
 
-function search(key) {
+function search() {
+    var key = document.getElementById("searchInput").value;
+    console.log(key);
     clearPatientInfo();
     clearPatientList();
     var dataStr = "function=searchPatient&data=" + key;
