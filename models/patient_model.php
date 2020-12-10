@@ -316,13 +316,13 @@ class PatientModel extends DbModel
 
             $stmt = sqlsrv_prepare($conn, $sql, array());
             if( !$stmt ) {
-                die( print_r( sqlsrv_errors(), true));
+                echo ( print_r( sqlsrv_errors(), true)) . "1";
                 return false;
             }
             $getResults = sqlsrv_execute($stmt);
             // echo ("Reading data from table" . PHP_EOL);
             if ($getResults == FALSE) {
-                die (print_r( sqlsrv_errors(), true));
+                echo (print_r( sqlsrv_errors(), true)) . "2";
                 // echo json_encode(sqlsrv_errors());
                 // echo json_encode("WHY");
                 return false;
@@ -338,7 +338,7 @@ class PatientModel extends DbModel
 
             $stmt = sqlsrv_prepare($conn, $sql, array());
             if( !$stmt ) {
-                die( print_r( sqlsrv_errors(), true));
+                echo ( print_r( sqlsrv_errors(), true)) . "3";
                 return false;
             }
             $getResults = sqlsrv_execute($stmt);

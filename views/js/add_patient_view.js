@@ -8,6 +8,8 @@ var drugList;
 function setUp() {
     activeAddNav();
     getDrugList();
+    // getDoctorList();
+    // getNurseList();
 }
 
 function activeAddNav() {
@@ -33,6 +35,9 @@ function submitInpatienForm() {
     var decision = confirm("ARE YOU SURE?");
 
     if (decision) {
+        var doctorSelect = document.getElementById("doctorListIn");
+        var nurseSelect = document.getElementById("nurseListIn");
+
         var fName = document.getElementById("fNameIn").value;
         var lName = document.getElementById("lNameIn").value;
         var dob = new Date(document.getElementById("birthdateIn").value);
@@ -40,18 +45,17 @@ function submitInpatienForm() {
         var gender = (document.getElementById("genderIn").value == 1) ? "m" : "f";
         var phone = document.getElementById("phoneIn").value;
         var date = new Date(document.getElementById("admissionDate").value);
-        var nurseId = Number(document.getElementById("nurseId").value);
-        var doctorId = Number(document.getElementById("doctorId").value);
+        var nurseId = Number(nurseSelect.options[nurseSelect.selectedIndex].id);
+        var doctorId = Number(doctorSelect.options[doctorSelect.selectedIndex].id);
         var room = document.getElementById("room").value;
         var fee = document.getElementById("feeIn").value;
         var diagnosis = document.getElementById("diagnosisIn").value;
 
         var validatePhone = phone.match(/^\d{10}$/) || phone.match(/^\d{11}$/);
-        var validateId = Number.isInteger(nurseId) && Number.isInteger(doctorId);
+        var validateId = (nurseSelect.options[nurseSelect.selectedIndex].value != "") && (doctorSelect.options[doctorSelect.selectedIndex].value != "");
         var validateFee = !isNaN(parseFloat(Number(fee)));
         var validateDob = (dob < new Date()) ? 1 : 0;
         var validateDate = (date < new Date()) ? 1 : 0;
-        // console.log(validateDate);
 
         if (fName == "" || lName == "" || addr == "" || room == "" || diagnosis == "" || nurseId == "" || doctorId == "" || fee == "") {
             alert("Please fill all the information!");
@@ -84,23 +88,40 @@ function submitOutpatienForm() {
         if (patientInfo != "") {
             addOutpatient(patientInfo);
         }
-        // getDrugInfo("OP00004");
+        // getDrugInfo("OP000017");
     }
+}
+
+function addDrug(patientId) {
+    getDrugInfo(patientId)
 }
 
 function getDrugInfo(patientId) {
     var drugBody = document.getElementById("drugInfo");
+    console.log(patientId);
+    var fail = false;
 
     for (var i = drugBody.rows.length - 1; i >= 0; i--) {
-        // drugBody.deleteRow(i);
         var dataStr = "&pId=" + patientId + "&examId=1";  
         dataStr = dataStr + "&code=" + drugBody.rows[i].cells[0].firstChild.defaultValue 
             + "&amount=" + drugBody.rows[i].cells[4].firstChild.defaultValue;
-        addDrugTreatment(dataStr);
-	}
+        console.log(dataStr);
+        if (addDrugTreatment(dataStr) == false) {
+            fail = true;
+            break;
+        }
+    }
+
+    if (fail == false) {
+        resetDrugTable();
+        alert("Add outpatient success");
+        document.getElementById("addOutpatientForm").reset();
+    }
 }
 
 function getOutpatientInfo() {
+    var doctorSelect = document.getElementById("doctorListOut");
+
     var fName = document.getElementById("fNameOut").value;
     var lName = document.getElementById("lNameOut").value;
     var dob = new Date(document.getElementById("birthdateOut").value);
@@ -109,19 +130,25 @@ function getOutpatientInfo() {
     var phone = document.getElementById("phoneOut").value;
     var examDate = new Date(document.getElementById("examDate").value);
     var secondDate = new Date(document.getElementById("secondDate").value);
-    var doctorExamId = Number(document.getElementById("doctorExamId").value);
+    var doctorExamId = Number(doctorSelect.options[doctorSelect.selectedIndex].id);
     var fee = document.getElementById("feeOut").value;
     var diagnosis = document.getElementById("diagnosisOut").value;
+    var drugBody = document.getElementById("drugInfo");
 
     var validatePhone = phone.match(/^\d{10}$/) || phone.match(/^\d{11}$/);
-    var validateId = Number.isInteger(doctorExamId);
+    var validateId = (doctorSelect.options[doctorSelect.selectedIndex].value != "");
     var validateFee = !isNaN(parseFloat(Number(fee)));
     var validateDob = (dob < new Date()) ? 1 : 0;
-    var validateDate = (examDate <= new Date()) ? 1 : 0;
+    var validateDate = 0;
+    if (examDate < new Date() && examDate < secondDate) {
+        validateDate = 1;
+    }
+    var validateDrug = (drugBody.rows.length > 0) ? 1 : 0; 
+    console.log(validateDrug);
     // console.log(validateDate);
 
-    if (fName == "" || lName == "" || addr == "" || diagnosis == "" || doctorId == "" || fee == "") {
-        alert("Please fill all the information!");
+    if (fName == "" || lName == "" || addr == "" || diagnosis == "" || doctorExamId == "" || fee == "" || drugBody.rows.length == 0) {
+        alert("Please fill all the information!")
     } else if (validateId && validateFee && validatePhone && validateDob && validateDate) {
         var dataStr = 
             "&fName=" + fName + 
@@ -141,6 +168,40 @@ function getOutpatientInfo() {
     }
     return "";
 }
+
+
+function showDoctorList(doctorList) {
+    var doctor = document.getElementById("doctorListIn");
+
+	for (var index in doctorList) {
+		var option = document.createElement("option");
+		option.text = doctorList[index].fName + " " + doctorList[index].lName;
+		option.id = doctorList[index].eId;
+		doctor.add(option);
+    }
+    
+    var doctor = document.getElementById("doctorListOut");
+
+	for (var index in doctorList) {
+		var option = document.createElement("option");
+		option.text = doctorList[index].fName + " " + doctorList[index].lName;
+		option.id = doctorList[index].eId;
+		doctor.add(option);
+	}
+}
+
+
+function showNurseList(nurseList) {
+    var nurse = document.getElementById("nurseListIn");
+
+	for (var index in nurseList) {
+		var option = document.createElement("option");
+		option.text = nurseList[index].fName + " " + nurseList[index].lName;
+		option.id = nurseList[index].eId;
+		nurse.add(option);
+	}
+}
+
 
 function showDrugList(drugList) {
     var drugSelect = document.getElementById("drugName");
@@ -166,7 +227,7 @@ function getDrug() {
             var drugPrice = drugList[index].price;
             var drugName = drug.options[drug.selectedIndex].value;
 
-            if (!updateDrug(drugCode, drugAmount.value)) {
+            if (!updateDrugAmount(drugCode, drugAmount.value)) {
             
                 // Insert a row at the end of the table
                 var newRow = drugBody.insertRow(-1);
@@ -242,7 +303,8 @@ function getDrug() {
                 removeButton.setAttribute("type", "button");
                 removeButton.setAttribute("class", "form-control btn btn-danger fa fa-trash");
                 removeButton.onclick = function () {
-                    removeDrug(remove.getAttribute("id"));
+                    // removeDrug(remove.getAttribute("id"));
+                    removeDrug(drugCode);
                 };
                 remove.appendChild(removeButton);
             }
@@ -253,7 +315,7 @@ function getDrug() {
     }
 } 
 
-function updateDrug(code, amount) {
+function updateDrugAmount(code, amount) {
     // console.log(code);
     var drugBody = document.getElementById("drugInfo");
 	for (var i = drugBody.rows.length - 1; i >= 0; i--) {
@@ -265,18 +327,20 @@ function updateDrug(code, amount) {
     return false;
 }
 
-function removeDrug(id) {
-	var drugBody = document.getElementById("drugInfo");
+function removeDrug(code) {
+    var drugBody = document.getElementById("drugInfo");
+
 	for (var i = drugBody.rows.length - 1; i >= 0; i--) {
-        if (i == parseInt(id) - 1) {
+        if (parseInt(drugBody.rows[i].cells[0].firstChild.defaultValue) == parseInt(code)) {
             drugBody.deleteRow(i);
-            if (drugBody.rows.length == 0) {
-                document.getElementById("drugForm").style.display = "none";
-            }
             break;
         }
-	}
-}
+    }
+
+    if (drugBody.rows.length == 0) {
+        document.getElementById("drugForm").style.display = "none";
+    }
+}   
 
 function resetDrugTable() {
     var drugBody = document.getElementById("drugInfo");
@@ -284,6 +348,39 @@ function resetDrugTable() {
 	for (var i = drugBody.rows.length - 1; i >= 0; i--) {
         drugBody.deleteRow(i);
 	}
+}
+
+
+function getDoctorList() {
+    request = "function=getDoctor"
+
+    ajax.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var result = this.responseText;
+            console.log(result);
+            var data = JSON.parse(result);
+            showDoctorList(data);
+            getNurseList();
+        }
+    }
+    ajax.open(method, url + request, asynchronous);
+    ajax.send();
+}
+
+
+function getNurseList() {
+    request = "function=getNurse"
+
+    ajax.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var result = this.responseText;
+            console.log(result);
+            var data = JSON.parse(result);
+            showNurseList(data);
+        }
+    }
+    ajax.open(method, url + request, asynchronous);
+    ajax.send();
 }
 
 
@@ -295,9 +392,10 @@ function getDrugList() {
             var result = this.responseText;
             // console.log(result);
             var data = JSON.parse(result);
-            // console.log(data);
+            console.log(data);
             drugList = data;
             showDrugList(drugList);
+            getDoctorList();
         }
     }
     ajax.open(method, url + request, asynchronous);
@@ -339,7 +437,8 @@ function addOutpatient(dataStr) {
             } else {
                 var data = JSON.parse(result);
                 console.log(data);
-                getDrugInfo(data);
+                // getDrugInfo(data);
+                addDrug(data);
             }
         }
     }
@@ -359,13 +458,10 @@ function addDrugTreatment(dataStr) {
             console.log(result);
             if (result == false) {
                 alert("Add drug failed");
+                return false;
             } else {
-                resetDrugTable();
-                alert("Add outpatient success");
-                document.getElementById("addOutpatientForm").reset();
+                return true;
             }
-            // var data = JSON.parse(result);
-            // console.log(data);
         }
     }
     ajax.open(method, url + request, asynchronous);

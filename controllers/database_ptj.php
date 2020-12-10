@@ -34,14 +34,26 @@
         echo json_encode($result);
         // }
     } elseif ($_REQUEST["function"] == "getDoctor") {
-        $doctorModel = new DoctorModel();
-        $doctorList = $doctorModel->queryGetDoctorNameList($_SESSION["name"], $_SESSION["pass"]);
+        $employeeModel = new EmployeeModel();
+        $employeeList = $employeeModel->queryGetDoctorNameList($_SESSION["name"], $_SESSION["pass"]);
         $result = array();
-        for ($i = 0; $i < sizeof($doctorList); $i++) {
+        for ($i = 0; $i < sizeof($employeeList); $i++) {
             $result[$i] = array (
-                "eId" => $doctorList[$i]->geteId(),
-                "fName" => $doctorList[$i]->getFName(),
-                "lName" => $doctorList[$i]->getLName(),
+                "eId" => $employeeList[$i]->geteId(),
+                "fName" => $employeeList[$i]->getFName(),
+                "lName" => $employeeList[$i]->getLName(),
+            );
+        }
+        echo json_encode($result);
+    } elseif ($_REQUEST["function"] == "getNurse") {
+        $employeeModel = new EmployeeModel();
+        $employeeList = $employeeModel->queryGetNurseNameList($_SESSION["name"], $_SESSION["pass"]);
+        $result = array();
+        for ($i = 0; $i < sizeof($employeeList); $i++) {
+            $result[$i] = array (
+                "eId" => $employeeList[$i]->geteId(),
+                "fName" => $employeeList[$i]->getFName(),
+                "lName" => $employeeList[$i]->getLName(),
             );
         }
         echo json_encode($result);
