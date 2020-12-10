@@ -124,7 +124,9 @@ class Drug {
 class PatientModel extends DbModel 
 {
     public function queryGetPatientNameList(
-        $patientName, $name, $pass
+        $patientName, 
+        $name, 
+        $pass
     ) {
         $conn = $this->connect($name, $pass);
         if (!$conn) {
@@ -236,7 +238,8 @@ class PatientModel extends DbModel
     }
 
     public function queryGetDrugList(
-        $name, $pass
+        $name, 
+        $pass
     ) {
         $conn = $this->connect($name, $pass);
         if (!$conn) {
@@ -254,7 +257,7 @@ class PatientModel extends DbModel
             // $getResults= sqlsrv_query($conn, $sql);
             $stmt = sqlsrv_prepare($conn, $sql, array());
             if( !$stmt ) {
-                die( print_r( sqlsrv_errors(), true));
+                echo( print_r( sqlsrv_errors(), true));
                 return false;
             }
             $getResults = sqlsrv_execute($stmt);
@@ -497,13 +500,13 @@ class PatientModel extends DbModel
         } else {
             $sql= " SELECT 
                         p.Patient_ID, p.First_Name, p.Last_Name, p.Phone, p.Address, p.Gender, p.Date_Of_Birth, 
-                        f.Exam_Date, f.Second_Exam_Date, f.Diagnosis, f.Fee, f.Name, f.Amount, f.Price, f.Expiration_Date, f.Out_Date
+                        f.Exam_ID, f.Exam_Date, f.Second_Exam_Date, f.Diagnosis, f.Fee, f.Name, f.Amount, f.Price, f.Expiration_Date, f.Out_Date
                     FROM 
                         hospital.OUTPATIENT p
                     INNER JOIN 
                     (
                         SELECT 
-                            c.Patient_ID, e.Exam_Date, e.Second_Exam_Date, e.Diagnosis, e.Fee, c.Name, c.Amount, c.Effects, c.Price, c.Expiration_Date, c.Out_Date 
+                            c.Patient_ID, e.Exam_ID, e.Exam_Date, e.Second_Exam_Date, e.Diagnosis, e.Fee, c.Name, c.Amount, c.Effects, c.Price, c.Expiration_Date, c.Out_Date 
                         FROM 
                             hospital.EXAMINATION e
                         INNER JOIN 
@@ -547,6 +550,7 @@ class PatientModel extends DbModel
                     "addr" => $row['Address'],
                     "gender" => $row['Gender'],
                     "dob" => $row['Date_Of_Birth'],
+                    "examId" => $row['Exam_ID'],
                     "examDate" => $row['Exam_Date'],
                     "secondDate" => $row['Second_Exam_Date'],
                     "diagnosis" => $row['Diagnosis'],

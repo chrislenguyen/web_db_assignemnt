@@ -92,6 +92,7 @@ function showInPatient() {
     document.getElementById("patientListForm").style.display = "block";
 }
 
+
 function viewPatientInfo(index) {
     // console.log(index);
     // console.log(inpatientList[index].pId);

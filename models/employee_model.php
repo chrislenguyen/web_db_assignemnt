@@ -52,6 +52,7 @@ class EmployeeModel extends DbModel {
             $employeeList = array();
             if ($getResults == FALSE) {
                 // echo (sqlsrv_errors());
+                echo( print_r( sqlsrv_errors(), true));
             } else {
                 while ($row = sqlsrv_fetch_array($getResults, SQLSRV_FETCH_ASSOC)) {
                     // echo json_encode ($row['First_Name'] . " " . $row['Last_Name'] . PHP_EOL);
