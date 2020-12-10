@@ -131,7 +131,8 @@ function getOutpatientInfo() {
     var examDate = new Date(document.getElementById("examDate").value);
     var secondDate = new Date(document.getElementById("secondDate").value);
     var doctorExamId = Number(doctorSelect.options[doctorSelect.selectedIndex].id);
-    var fee = document.getElementById("feeOut").value;
+    // var fee = document.getElementById("feeOut").value;
+    var fee = document.getElementById("totalFee").value;
     var diagnosis = document.getElementById("diagnosisOut").value;
     var drugBody = document.getElementById("drugInfo");
 
@@ -212,6 +213,27 @@ function showDrugList(drugList) {
         option.id = index;
         drugSelect.add(option);
     }
+}
+
+function updateTotalFee() {
+    var drugBody = document.getElementById("drugInfo");
+    var examFee = document.getElementById("feeOut").value;
+    var validateFee = !isNaN(parseFloat(Number(examFee)));
+
+    if (validateFee) {
+        var total = examFee;
+        var drugFee = 0;
+        for (var i = drugBody.rows.length - 1; i >= 0; i--) {
+            var fee = parseInt(drugBody.rows[i].cells[3].firstChild.defaultValue) * parseInt(drugBody.rows[i].cells[4].firstChild.defaultValue);
+            var drugFee = Number(drugFee) + Number(fee);   
+        }
+        total = Number(total) + Number(drugFee);
+        document.getElementById("totalFee").value = total;
+        console.log(total);
+    } else {
+        alert("Invalid fee input");
+    }
+
 }
 
 function getDrug() {
@@ -310,6 +332,7 @@ function getDrug() {
             }
             document.getElementById("drugForm").style.display = "block";
         }
+        updateTotalFee();
     } else {
         alert("Not fill enough information to add drug!");
     }

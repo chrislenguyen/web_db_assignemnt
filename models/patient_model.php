@@ -40,6 +40,48 @@ class Patient {
 
 }
 
+class Inpatient extends Patient {
+    private $adDate;
+    private $disDate;
+    private $start;
+    private $end;
+    private $result;
+    private $doctor;
+
+    public function getAdDate() {
+        return $this->adDate;
+    }
+
+    public function getDisDate() {
+        return $this->disDate;
+    }
+
+    public function getStart() {
+        return $this->start;
+    }
+
+    public function getEnd() {
+        return $this->end;
+    }
+
+    public function setAdDate($adDate) {
+        $this->adDate = $adDate;
+    }
+
+    public function setDisDate($disDate) {
+        $this->disDate = $disDate;
+    }
+
+    public function setStart($start) {
+        $this->start = $start;
+    }
+
+    public function setEnd($end) {
+        $this->end = $end;
+    }
+
+}
+
 class Drug {
     private $drugCode;
     private $name;
@@ -89,96 +131,105 @@ class PatientModel extends DbModel
             die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
             return false;
         } else {
-            $words = explode(' ',trim($patientName));
-            $firstWord = $words[0];
-            $lastWord = array_pop($words);
-            $firstStr = "";
-            $lastStr = "";
-            // echo json_encode($firstWord . $lastWord . $firstStr . $lastStr);
-            if ($firstWord != $lastWord) {
-                $last_word_start = strrpos($patientName, ' '); 
-                $firstStr = substr($patientName, 0, $last_word_start);
-                $lastStr = substr(strstr($patientName," "), 1);
-            } 
-            
             $patientList = array();
-            // echo json_encode($firstWord . $lastWord . $firstStr . $lastStr);
 
-            $sql= "SELECT 
-                        * 
+            $sql = "SELECT 
+                        P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, A.Admission_Date, A.Discharge_Date, T.START_DATE, T.END_DATE, T.Result, CONCAT(e.Last_Name, ' ', E.First_Name) AS Doctor_Name
                     FROM 
-                        hospital.INPATIENT
-                    WHERE
-                        First_Name = ? 
+                        hospital.INPATIENT AS P
+                    JOIN 
+                        hospital.ADMISSION AS A ON A.Patient_ID = P.Patient_ID
+                    JOIN 
+                        hospital.TREATMENT AS T ON T.Admission_ID = A.Admission_ID
+                    JOIN 
+                        hospital.TREATMENT_DOCTOR AS TD ON TD.Treatment_ID = T.Treatment_ID AND A.Admission_ID = TD.Admission_ID
+                    JOIN 
+                        hospital.EMPLOYEE AS E ON E.Employee_ID = TD.Doctor_ID
+                    WHERE 
+                        P.First_Name = ?
                         OR 
-                        Last_Name LIKE ?
+                        P.Last_Name LIKE ?
+                        OR
+                        P.Last_Name LIKE ?
                         OR 
-                        (First_Name = ? AND Last_Name LIKE ?)
+                        CONCAT(P.Last_Name, ' ', P.First_Name) LIKE ?
                         OR 
-                        (First_Name = ? AND Last_Name LIKE ?)
+                        CONCAT(P.First_Name, ' ', P.Last_Name) LIKE ?
                         OR 
-                        Patient_ID LIKE ?";
+                        P.Patient_ID LIKE ?";
 
-            $stmt = sqlsrv_prepare($conn, $sql, array($patientName, "%$patientName", $firstWord, "%$lastStr%", $lastWord, "%$firstStr%", "$patientName%"));
+            $stmt = sqlsrv_prepare($conn, $sql, array("$patientName", "$patientName%", "%$patientName", "$patientName%", "$patientName%", "$patientName%"));
             if( !$stmt ) {
-                die( print_r( sqlsrv_errors(), true));
+                echo ( print_r( sqlsrv_errors(), true));
                 return false;
             }
             $getResults = sqlsrv_execute($stmt);
 
-            // $getResults= sqlsrv_query($conn, $sql);
-
             if ($getResults == FALSE) {
-                // echo json_encode(sqlsrv_errors());
-                // echo json_encode("WHY");
-                return false;
-            } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-                $patient = new Patient();
-                $patient->setpId($row['Patient_ID']);
-                $patient->setFName($row['First_Name']);
-                $patient->setLName($row['Last_Name']);
-                $patient->setPhone($row['Phone']);
-                $patientList[] = $patient;
-            }
-            // sqlsrv_free_stmt($getResults);
-
-            $sql= "SELECT 
-                        * 
-                    FROM 
-                        hospital.OUTPATIENT
-                    WHERE
-                        First_Name = ? 
-                        OR 
-                        Last_Name LIKE ?
-                        OR 
-                        (First_Name = ? AND Last_Name LIKE ?)
-                        OR 
-                        (First_Name = ? AND Last_Name LIKE ?)
-                        OR 
-                        Patient_ID LIKE ?";
-
-            $stmt = sqlsrv_prepare($conn, $sql, array($patientName, "%$patientName%", $firstWord, "%$lastStr%", $lastWord, "%$firstStr%", "$patientName%"));
-            if( !$stmt ) {
-                die( print_r( sqlsrv_errors(), true));
+                echo ( print_r( sqlsrv_errors(), true));
                 return false;
             }
-            $getResults = sqlsrv_execute($stmt);
-
-            // $getResults= sqlsrv_query($conn, $sql);
-
-            if ($getResults == FALSE) {
-                // echo json_encode(sqlsrv_errors());
-                // echo json_encode("WHY");
-                return false;
-            } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-                $patient = new Patient();
-                $patient->setpId($row['Patient_ID']);
-                $patient->setFName($row['First_Name']);
-                $patient->setLName($row['Last_Name']);
-                $patient->setPhone($row['Phone']);
-                $patientList[] = $patient;
+            $inpatientList = array();
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $inpatientList[] = array(
+                    "pId" => $row['Patient_ID'],
+                    "fName" => $row['First_Name'],
+                    "lName" => $row['Last_Name'],
+                    "phone" => $row['Phone'],
+                    "adDate" => $row['Admission_Date'],
+                    "disDate" => $row['Discharge_Date'],
+                    "start" => $row['START_DATE'],
+                    "end" => $row['END_DATE'],
+                    "result" => $row['Result'],
+                    "doctor" => $row['Doctor_Name']
+                );
             }
-            // sqlsrv_free_stmt($getResults);
+            $patientList[] = $inpatientList;
+
+
+            // $sql = "SELECT 
+            //             P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, A.Admission_Date, A.Discharge_Date, T.START_DATE, T.END_DATE, T.Result, CONCAT(e.Last_Name, ' ', E.First_Name) AS Doctor_Name
+            //         FROM 
+            //             hospital.INPATIENT AS P
+            //         JOIN 
+            //             hospital.ADMISSION AS A ON A.Patient_ID = P.Patient_ID
+            //         JOIN 
+            //             hospital.TREATMENT AS T ON T.Admission_ID = A.Admission_ID
+            //         JOIN 
+            //             hospital.TREATMENT_DOCTOR AS TD ON TD.Treatment_ID = T.Treatment_ID AND A.Admission_ID = TD.Admission_ID
+            //         JOIN 
+            //             hospital.EMPLOYEE AS E ON E.Employee_ID = TD.Doctor_ID
+            //         WHERE 
+            //             P.First_Name = ?
+            //             OR 
+            //             P.Last_Name LIKE ?
+            //             OR
+            //             P.Last_Name LIKE ?
+            //             OR 
+            //             CONCAT(P.Last_Name, ' ', P.First_Name) LIKE ?
+            //             OR 
+            //             CONCAT(P.First_Name, ' ', P.Last_Name) LIKE ?
+            //             OR 
+            //             P.Patient_ID LIKE ?";
+
+            // $stmt = sqlsrv_prepare($conn, $sql, array("$patientName", "$patientName%", "%$patientName", "$patientName%", "$patientName%", "$patientName%"));
+            // if( !$stmt ) {
+            //     echo ( print_r( sqlsrv_errors(), true));
+            //     return false;
+            // }
+            // $getResults = sqlsrv_execute($stmt);
+
+            // if ($getResults == FALSE) {
+            //     echo ( print_r( sqlsrv_errors(), true));
+            //     return false;
+            // } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+            //     $patient = new Patient();
+            //     $patient->setpId($row['Patient_ID']);
+            //     $patient->setFName($row['First_Name']);
+            //     $patient->setLName($row['Last_Name']);
+            //     $patient->setPhone($row['Phone']);
+            //     $patientList[] = $patient;
+            // }
 
             return $patientList;
         }

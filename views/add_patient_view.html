@@ -266,14 +266,14 @@
                 <div class="row form-group">
                     <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
                     style="border: none; box-shadow: none; resize: none; background-color: white;">Fee</textarea>
-                    <input class="col col-3" id="feeOut" class="form-control" type="text">
+                    <input class="col col-3" id="feeOut" class="form-control" type="text" onchange="updateTotalFee()">
 
                     <!-- <div class="col col-1"></div> -->
 
                     <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
                     style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Total Fee</textarea>
                     <!-- <input class="col col-3" id="totalFee" class="form-control" type="text"> -->
-                    <textarea class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    <textarea id="totalFee" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
                     style="box-shadow: none; resize: none; background-color: white;">0</textarea>
                 </div>
 

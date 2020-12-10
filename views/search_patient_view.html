@@ -13,7 +13,7 @@
                 <button id="searchBtn" class="btn btn-primary btn-rounded btn-sm my-0" type="button">Search</button>
             </form> 
 
-            <div id="patientForm" style="display:none;" class="p-3 mb-2 bg-white text-dark">
+            <div id="patientListForm" style="display:none;" class="p-3 mb-2 bg-white text-dark">
                 <table class="table table-bordered">
                     <thead>
                         <tr class="text-center">
@@ -25,10 +25,69 @@
                         </tr>
                     </thead>
 
-                    <tbody id="patientInfo">
+                    <tbody id="patientListInfo">
                     </tbody>
                 </table>
             </div>
+
+
+            <form id="patientForm" style="display: none;" class="form-group p-5 mb-2 bg-white text-dark">   
+                <div class="row justify-content-md-center">
+                    <label style="font-size: 25px;">Inpatient information</label>
+                </div>
+                <br>
+
+                <div class="row form-group">
+                    <!-- <div class="col col-1"></div> -->
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Patient ID</textarea>
+                    <textarea id="patientId" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+
+                <div class="row form-group">
+                    <!-- <div class="col col-1"></div> -->
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">First Name</textarea>
+                    <textarea id="firstName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Last Name</textarea>
+                    <textarea id="lastName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+                <div class="row form-group">
+                    <!-- <div class="col col-1"></div> -->
+                    
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Phone Number</textarea>
+                    <textarea id="phoneNumber" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+                <br>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">Admission</th>
+                            <th scope="col">Discharge</th>
+                            <th scope="col">Start date</th>
+                            <th scope="col">End date</th>
+                            <th scope="col">Result</th>
+                            <th scope="col">Doctor Name</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="patientInfo">
+                    </tbody>
+                </table>
+            </form>
         </div>
     </div>
 </body> 

@@ -16,23 +16,17 @@
         $patient = new PatientModel();
         // $patient->connect($_SESSION['name'], $_SESSION['pass']);
     } elseif ($_REQUEST["function"] == "searchPatient") {
-        $result = array();
-        $patientModel = new PatientModel();
-        $patientList = $patientModel->queryGetPatientNameList(test_input($_REQUEST["data"]), $_SESSION["name"], $_SESSION["pass"]);
-        if ($patientList == false) {
-            echo false;
+        if ($_REQUEST["data"] != "") {
+            // $result = array();
+            $patientModel = new PatientModel();
+            $patientList = $patientModel->queryGetPatientNameList(test_input($_REQUEST["data"]), $_SESSION["name"], $_SESSION["pass"]);
+            if ($patientList == false) {
+                echo false;
+            } 
+            echo json_encode($patientList);
         } else {
-            for ($i = 0; $i < sizeof($patientList); $i++) {
-                $result[$i] = array (
-                    "pId" => $patientList[$i]->getpId(),
-                    "fName" => $patientList[$i]->getFName(),
-                    "lName" => $patientList[$i]->getLName(),
-                    "phone" => $patientList[$i]->getPhone()
-                );
-            }
+            echo false;
         }
-        echo json_encode($result);
-        // }
     } elseif ($_REQUEST["function"] == "getDoctor") {
         $employeeModel = new EmployeeModel();
         $employeeList = $employeeModel->queryGetDoctorNameList($_SESSION["name"], $_SESSION["pass"]);
