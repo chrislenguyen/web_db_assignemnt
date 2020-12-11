@@ -285,7 +285,7 @@ function viewInpatientInfo(index) {
             nurse_text.defaultValue = inpatientList[i].nurse;
             nurse.appendChild(nurse_text);
 
-            break;
+            // break;
         }
     }
     document.getElementById("inpatientForm").style.display = "block";
@@ -360,7 +360,7 @@ function viewOutpatientInfo(index) {
             doctor_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
             doctor_text.setAttribute("rows", "2");
             doctor_text.setAttribute("cols", "2");
-            doctor_text.defaultValue = inpatientList[i].doctor;
+            doctor_text.defaultValue = outpatientList[i].doctor;
             doctor.appendChild(doctor_text);
         }
     }
@@ -384,21 +384,33 @@ function clearPatientInfo() {
     for (var i = tableBody.rows.length - 1; i >= 0; i--) {
         tableBody.deleteRow(i);
     }
+    document.getElementById("outpatientForm").reset();
+    document.getElementById("outpatientForm").style.display = "none";
+    var tableBody = document.getElementById("outpatientInfo");
+    for (var i = tableBody.rows.length - 1; i >= 0; i--) {
+        tableBody.deleteRow(i);
+    }
 }
 
 function search() {
     var key = document.getElementById("searchInput").value;
+    clearPatientInfo();
+    clearPatientList();
     // console.log(key);
-    document.getElementById("searching").innerHTML = "Searching for " + key + "! Please wait for a while";
-    document.getElementById("searching").style.display = "block";
+    if (key != "") {
+        document.getElementById("searching").innerHTML = "<i class='col col-1 fa fa-spinner'></i>Searching for " + key + "! Please wait for a while";
+        document.getElementById("searching").style.display = "block";
+    } else {
+        document.getElementById("searching").innerHTML = "";
+        document.getElementById("searching").style.display = "none";
+    }
 
-    var dataStr = "function=searchPatient&data=" + key;
+
+    var dataStr = "function=searchPatients&data=" + key;
     ajax.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             document.getElementById("searching").innerHTML = "";
             document.getElementById("searching").style.display = "none";
-            clearPatientInfo();
-            clearPatientList();
             var result = this.responseText;
             // console.log(result);	
             // console.log(this.responseText);

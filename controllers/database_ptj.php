@@ -12,10 +12,16 @@
         return $data;
     }
 
-    if ($_REQUEST["function"] == "test") {
-        $patient = new PatientModel();
-        // $patient->connect($_SESSION['name'], $_SESSION['pass']);
-    } elseif ($_REQUEST["function"] == "searchPatient") {
+    if ($_REQUEST["function"] == "getPatients") {
+        // $result = array();
+        $patientModel = new PatientModel();
+        $patientList = $patientModel->querySearchPatient($_SESSION["name"], $_SESSION["pass"], test_input($_REQUEST["data"]));
+        if ($patientList == false) {
+            echo false;
+        } else {
+            echo json_encode($patientList);
+        }
+    } elseif ($_REQUEST["function"] == "searchPatients") {
         if ($_REQUEST["data"] != "") {
             // $result = array();
             $patientModel = new PatientModel();
@@ -68,23 +74,41 @@
             }
         }
         echo json_encode($result);
+    } else if ($_REQUEST["function"] == "getTreatment") {
+        $result = array();
+        $patientModel = new PatientModel();
+        $result = $patientModel->queyGetAllTreatmentByPatientId($_SESSION["name"], $_SESSION["pass"], $_REQUEST["pId"]);
+        if ($result == false) {
+            echo false;
+        } else {
+            echo json_encode($result);
+        }
+    } else if ($_REQUEST["function"] == "getExamination") {
+        $result = array();
+        $patientModel = new PatientModel();
+        $result = $patientModel->queyGetAllExaminationByPatientId($_SESSION["name"], $_SESSION["pass"], $_REQUEST["pId"]);
+        if ($result == false) {
+            echo false;
+        } else {
+            echo json_encode($result);
+        }
     } elseif ($_REQUEST["function"] == "addInpatient") {
         $patientModel = new PatientModel();
         $result = $patientModel->callProcAddNewInPatient(
             $_SESSION["name"], 
             $_SESSION["pass"],
-            $_REQUEST["fName"],
-            $_REQUEST["lName"],
+            test_input($_REQUEST["fName"]),
+            test_input($_REQUEST["lName"]),
             $_REQUEST["dob"],
-            $_REQUEST["addr"],
+            test_input($_REQUEST["addr"]),
             $_REQUEST["gender"],
             $_REQUEST["phone"],
             $_REQUEST["date"],
             $_REQUEST["nurseId"],
             $_REQUEST["doctorId"],
-            $_REQUEST["room"],
+            test_input($_REQUEST["room"]),
             $_REQUEST["fee"],
-            $_REQUEST["diagnosis"]
+            test_input($_REQUEST["diagnosis"])
         );
         if ($result == true) {
             echo true;
@@ -96,17 +120,17 @@
         $result = $patientModel->callProcAddNewOutPatient(
             $_SESSION["name"], 
             $_SESSION["pass"],
-            $_REQUEST["fName"],
-            $_REQUEST["lName"],
+            test_input($_REQUEST["fName"]),
+            test_input($_REQUEST["lName"]),
             $_REQUEST["dob"],
-            $_REQUEST["addr"],
+            test_input($_REQUEST["addr"]),
             $_REQUEST["gender"],
             $_REQUEST["phone"],
             $_REQUEST["examDate"],
             $_REQUEST["secondDate"],
             $_REQUEST["doctorId"],
             $_REQUEST["fee"],
-            $_REQUEST["diagnosis"]
+            test_input($_REQUEST["diagnosis"])
         );
         if ($result == false) {
             echo false;

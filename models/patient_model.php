@@ -579,4 +579,230 @@ class PatientModel extends DbModel
             // return $doctorList;
         }
     }
+
+
+    public function querySearchPatient($name, $pass, $patientName) {
+        $conn = $this->connect($name, $pass);
+        if (!$conn) {
+            die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
+            return false;
+        } else {
+            $patientList = array();
+
+            $sql = "SELECT 
+                        P.Patient_ID, P.First_Name, P.Last_Name, P.Phone
+                    FROM 
+                        hospital.INPATIENT AS P
+                    WHERE
+                        P.First_Name = ?
+                        OR 
+                        P.Last_Name LIKE ?
+                        OR
+                        P.Last_Name LIKE ?
+                        OR 
+                        CONCAT(P.Last_Name, ' ', P.First_Name) LIKE ?
+                        OR 
+                        CONCAT(P.First_Name, ' ', P.Last_Name) LIKE ?
+                        OR 
+                        P.Patient_ID LIKE ?
+                    ORDER BY
+                        P.Patient_ID";
+
+            $stmt = sqlsrv_prepare($conn, $sql, array("$patientName", "$patientName%", "%$patientName", "$patientName%", "$patientName%", "$patientName%"));
+            if( !$stmt ) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+
+            if ($getResults == FALSE) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $inpatientList = array();
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $inpatientList[] = array(
+                    "pId" => $row['Patient_ID'],
+                    "fName" => $row['First_Name'],
+                    "lName" => $row['Last_Name'],
+                    "phone" => $row['Phone'],
+                );
+            }
+            $patientList[] = $inpatientList;
+
+
+            $sql = "SELECT 
+                        P.Patient_ID, P.First_Name, P.Last_Name, P.Phone
+                    FROM 
+                        hospital.OUTPATIENT AS P
+                    WHERE
+                        P.First_Name = ?
+                        OR 
+                        P.Last_Name LIKE ?
+                        OR
+                        P.Last_Name LIKE ?
+                        OR 
+                        CONCAT(P.Last_Name, ' ', P.First_Name) LIKE ?
+                        OR 
+                        CONCAT(P.First_Name, ' ', P.Last_Name) LIKE ?
+                        OR 
+                        P.Patient_ID LIKE ?
+                    ORDER BY
+                        P.Patient_ID";
+
+            $stmt = sqlsrv_prepare($conn, $sql, array("$patientName", "$patientName%", "%$patientName", "$patientName%", "$patientName%", "$patientName%"));
+            if( !$stmt ) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+
+            if ($getResults == FALSE) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $outpatientList = array();
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $outpatientList[] = array(
+                    "pId" => $row['Patient_ID'],
+                    "fName" => $row['First_Name'],
+                    "lName" => $row['Last_Name'],
+                    "phone" => $row['Phone'],
+                );
+            }
+            $patientList[] = $outpatientList;
+
+            return $patientList;
+        }
+    }
+    
+    public function queyGetAllTreatmentByPatientId($name, $pass, $pId) {
+        $conn = $this->connect($name, $pass);
+        if (!$conn) {
+            die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
+            return false;
+        } else {
+            $sql = "SELECT 
+                        P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, P.Address, P.Gender, P.Date_Of_Birth,
+                        A.Admission_ID, A.Fee, A.Admission_Date, A.Discharge_Date, 
+                        T.Treatment_ID, T.START_DATE, T.END_DATE, T.Result,
+                        M.Name, TM.Amount, M.Price,
+                        CONCAT(E.Last_Name, ' ', E.First_Name) AS Doctor_Name
+                    FROM 
+                        hospital.INPATIENT AS P
+                    JOIN 
+                        hospital.ADMISSION AS A ON A.Patient_ID = P.Patient_ID
+                    JOIN 
+                        hospital.TREATMENT AS T ON T.Admission_ID = A.Admission_ID
+                    JOIN 
+                        hospital.TREATMENT_DOCTOR AS TD ON TD.Treatment_ID = T.Treatment_ID AND A.Admission_ID = TD.Admission_ID
+                    JOIN 
+                        hospital.EMPLOYEE AS E ON E.Employee_ID = TD.Doctor_ID
+                    JOIN 
+                        hospital.TREATMENT_MEDICATION AS TM ON TM.Admission_ID = A.Admission_ID AND TM.Treatment_ID = T.Treatment_ID
+                    JOIN 
+                        hospital.MEDICATION AS M ON M.Drug_Code = TM.Drug_Code
+                    WHERE 
+                        P.Patient_ID = '$pId'
+                    ORDER BY 
+                        T.Treatment_ID";
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+
+            if( !$stmt ) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+
+            if ($getResults == FALSE) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $patientInfo = array();
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $patientInfo[] = array(
+                    "pId" => $row['Patient_ID'],
+                    "fName" => $row['First_Name'],
+                    "lName" => $row['Last_Name'],
+                    "phone" => $row['Phone'],
+                    "addr" => $row['Address'],
+                    "gender" => $row['Gender'],
+                    "dob" => $row['Date_Of_Birth'],
+                    "tId" => $row['Treatment_ID'],
+                    "start" => $row['START_DATE'],
+                    "end" => $row['END_DATE'],
+                    "result" => $row['Result'],
+                    "drug" => $row['Name'],
+                    "amount" => $row['Amount'],
+                    "price" => $row['Price'],
+                    "doctor" => $row['Doctor_Name']
+                );
+            }
+
+            return $patientInfo;
+        }
+    }
+
+
+    public function queyGetAllExaminationByPatientId($name, $pass, $pId) {
+        $conn = $this->connect($name, $pass);
+        if (!$conn) {
+            die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
+            return false;
+        } else {
+            $sql = "SELECT 
+                        P.Patient_ID, P.Last_Name, P.First_Name, P.Phone, P.Address, P.Date_Of_Birth, P.Gender, 
+                        EX.Exam_Date, EX.Second_Exam_Date, EX.Diagnosis, EX.Exam_ID,
+                        M.Name, EM.Amount, M.Price,
+                        CONCAT(E.Last_Name, ' ', E.First_Name) AS Doctor_Name
+                    FROM 
+                        hospital.OUTPATIENT AS P
+                    JOIN 
+                        hospital.EXAMINATION AS EX ON EX.Patient_ID = P.Patient_ID
+                    JOIN
+                        hospital.EXAMINATION_MEDICATION AS EM ON EX.Exam_ID = EM.Exam_ID
+                    JOIN
+                        hospital.MEDICATION AS M ON M.Drug_Code = EM.Drug_Code
+                    JOIN
+                        hospital.EMPLOYEE AS E ON E.Employee_ID = EX.Doctor_Exam_ID
+                    WHERE 
+                        P.Patient_ID = '$pId'
+                    ORDER BY
+                        EX.Exam_ID";
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+
+            if( !$stmt ) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+
+            if ($getResults == FALSE) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $patientInfo = array();
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $patientInfo[] = array(
+                    "pId" => $row['Patient_ID'],
+                    "fName" => $row['First_Name'],
+                    "lName" => $row['Last_Name'],
+                    "phone" => $row['Phone'],
+                    "addr" => $row['Address'],
+                    "gender" => $row['Gender'],
+                    "dob" => $row['Date_Of_Birth'],
+                    "eId" => $row['Exam_ID'],
+                    "exDate" => $row['Exam_Date'],
+                    "secondDate" => $row['Second_Exam_Date'],
+                    "diagnosis" => $row['Diagnosis'],
+                    "drug" => $row['Name'],
+                    "amount" => $row['Amount'],
+                    "price" => $row['Price'],
+                    "doctor" => $row['Doctor_Name']
+                );
+            }
+
+            return $patientInfo;
+        }
+    }
 }
