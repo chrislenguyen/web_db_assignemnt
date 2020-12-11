@@ -194,6 +194,7 @@ function showDrug(table, patientList, index) {
     return Number(amount_text.value) * Number(price_text.value);
 }
 
+
 function showTotalFee(newForm, totalFee) {
     var fee = document.createElement("div");
     fee.setAttribute("class", "row form-group");

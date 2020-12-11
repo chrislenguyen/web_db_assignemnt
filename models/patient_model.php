@@ -508,36 +508,26 @@ class PatientModel extends DbModel
             die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
             return false;
         } else {
-            $sql= " SELECT 
-                        p.Patient_ID, p.First_Name, p.Last_Name, p.Phone, p.Address, p.Gender, p.Date_Of_Birth, 
-                        f.Exam_ID, f.Exam_Date, f.Second_Exam_Date, f.Diagnosis, f.Fee, f.Name, f.Amount, f.Price, f.Expiration_Date, f.Out_Date
+            $sql ="SELECT 
+                        P.Patient_ID, P.Last_Name, P.First_Name, P.Phone, P.Address, P.Date_Of_Birth, P.Gender, 
+                        EX.Exam_Date, EX.Second_Exam_Date, EX.Diagnosis, EX.Exam_ID, EX.Fee,
+                        M.Name, EM.Amount, M.Price, M.Expiration_Date
                     FROM 
-                        hospital.OUTPATIENT p
-                    INNER JOIN 
-                    (
-                        SELECT 
-                            c.Patient_ID, e.Exam_ID, e.Exam_Date, e.Second_Exam_Date, e.Diagnosis, e.Fee, c.Name, c.Amount, c.Effects, c.Price, c.Expiration_Date, c.Out_Date 
-                        FROM 
-                            hospital.EXAMINATION e
-                        INNER JOIN 
-                        (
-                            SELECT 
-                                m.Patient_ID, m.Exam_ID, e_m.Name, m.Amount, e_m.Effects, e_m.Price, e_m.Expiration_Date, e_m.Out_Date
-                            FROM 
-                            hospital.MEDICATION e_m 
-                            INNER JOIN 
-                                hospital.EXAMINATION_MEDICATION m 
-                            ON 
-                                e_m.Drug_Code = m.Drug_Code
-                        ) c
-                        ON 
-                            e.Patient_ID = c.Patient_ID AND e.Exam_ID = c.Exam_ID 
-                        WHERE 
-                            e.Doctor_Exam_ID = '$dId'
-                    ) f
-                    ON 
-                        f.Patient_ID = p.Patient_ID" ; 
-            $result = array();
+                        hospital.OUTPATIENT AS P
+                    JOIN 
+                        hospital.EXAMINATION AS EX ON EX.Patient_ID = P.Patient_ID
+                    JOIN
+                        hospital.EXAMINATION_MEDICATION AS EM ON EX.Exam_ID = EM.Exam_ID AND P.Patient_ID = EM.Patient_ID
+                    JOIN
+                        hospital.MEDICATION AS M ON M.Drug_Code = EM.Drug_Code
+                    JOIN
+                        hospital.EMPLOYEE AS E ON E.Employee_ID = EX.Doctor_Exam_ID
+                    WHERE
+                        EX.Doctor_Exam_ID = $dId
+                    ORDER BY
+                        P.Patient_ID, EX.Exam_ID";
+
+            $outpatient = array();
             $stmt = sqlsrv_prepare($conn, $sql, array());
             if( !$stmt ) {
                 die( print_r( sqlsrv_errors(), true));
@@ -552,7 +542,7 @@ class PatientModel extends DbModel
                 return false;
             } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 // echo implode($row);
-                $result[] = array (
+                $outpatient[] = array (
                     "pId" => $row['Patient_ID'],
                     "fName" => $row['First_Name'],
                     "lName" => $row['Last_Name'],
@@ -571,10 +561,10 @@ class PatientModel extends DbModel
                     "exDate" => $row['Expiration_Date']
                 );
             }
-            if (sizeof($result) < 1) {
+            if (sizeof($outpatient) < 1) {
                 return -1;
             }
-            return $result;
+            return $outpatient;
             // return true;
             // return $doctorList;
         }
@@ -760,7 +750,7 @@ class PatientModel extends DbModel
                     JOIN 
                         hospital.EXAMINATION AS EX ON EX.Patient_ID = P.Patient_ID
                     JOIN
-                        hospital.EXAMINATION_MEDICATION AS EM ON EX.Exam_ID = EM.Exam_ID
+                        hospital.EXAMINATION_MEDICATION AS EM ON EX.Exam_ID = EM.Exam_ID AND P.Patient_ID = EM.Patient_ID
                     JOIN
                         hospital.MEDICATION AS M ON M.Drug_Code = EM.Drug_Code
                     JOIN

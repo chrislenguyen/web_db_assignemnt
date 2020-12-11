@@ -9,8 +9,16 @@ var patient;
 
 function setUp() {
     activeReportNav();
+    clearForm();
+}
+
+
+function clearForm() {
+    closeTreatmentList();
+    closeExamList();
     search();
 }
+
 
 function activeReportNav() {
     var searchBar = document.getElementById("report");
@@ -518,12 +526,14 @@ function clearTreatmentInfo() {
 }
 
 function closeTreatmentList() {
+    clearTreatmentInfo()
+    document.getElementById("paymentBtn").style.display = "none";
     document.getElementById("treatmentListForm").style.display = "none";
     var tableBody = document.getElementById("treatmentListInfo");
     for (var i = tableBody.rows.length - 1; i >= 0; i--) {
         tableBody.deleteRow(i);
     }
-    search();
+    // search();
 }
 
 
@@ -544,12 +554,14 @@ function clearExamInfo() {
 }
 
 function closeExamList() {
+    clearExamInfo()
+    document.getElementById("examBtn").style.display = "none";
     document.getElementById("examListForm").style.display = "none";
     var tableBody = document.getElementById("examListInfo");
     for (var i = tableBody.rows.length - 1; i >= 0; i--) {
         tableBody.deleteRow(i);
     }
-    search();
+    // search();
 }
 
 function clearPatientList() {

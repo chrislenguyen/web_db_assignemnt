@@ -9,8 +9,8 @@
 	<div class="container content">
         <div class="p-5 mb-2 bg-light text-dark">
             <form class="form-inline md-form mr-auto mb-4 justify-content-md-center">
-                <input id="searchInput" onkeypress="return event.keyCode != 13;" onkeyup="search()" class="col col-3 form-control mr-sm-2" type="text" placeholder="Search patient..." aria-label="Search">
-                <button id="searchBtn" class="btn btn-primary btn-rounded btn-sm my-0" type="button" onclick="search()">Search</button>
+                <input id="searchInput" onkeypress="return event.keyCode != 13;" onkeyup="clearForm()" class="col col-3 form-control mr-sm-2" type="text" placeholder="Search patient..." aria-label="Search">
+                <button id="searchBtn" class="btn btn-primary btn-rounded btn-sm my-0" type="button" onclick="clearForm()">Search</button>
             </form> 
 
             <div class="row alert alert-primary" role="alert" id="searching" style="display: block;">
@@ -37,7 +37,7 @@
 
 
             <form id="treatmentListForm" style="display: none;" class="form-group p-5 mb-2 bg-white text-dark">      
-                <button type="button" class="close" aria-label="Close" onclick="closeTreatmentList()">
+                <button type="button" class="close" aria-label="Close" onclick="clearForm()">
 					<span aria-hidden="true">&times;</span>
                 </button>
                             
@@ -220,7 +220,7 @@
 
 
             <form id="examListForm" style="display: none;" class="form-group p-5 mb-2 bg-white text-dark">      
-                <button type="button" class="close" aria-label="Close" onclick="closeExamList()">
+                <button type="button" class="close" aria-label="Close" onclick="clearForm()">
 					<span aria-hidden="true">&times;</span>
                 </button>
                             
