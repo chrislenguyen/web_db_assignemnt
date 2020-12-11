@@ -700,7 +700,7 @@ class PatientModel extends DbModel
                     WHERE 
                         P.Patient_ID = '$pId'
                     ORDER BY 
-                        T.Treatment_ID";
+                        A.Admission_ID, T.Treatment_ID";
             $stmt = sqlsrv_prepare($conn, $sql, array());
 
             if( !$stmt ) {
@@ -723,6 +723,10 @@ class PatientModel extends DbModel
                     "addr" => $row['Address'],
                     "gender" => $row['Gender'],
                     "dob" => $row['Date_Of_Birth'],
+                    "aId" => $row['Admission_ID'],
+                    "adDate" => $row['Admission_Date'],
+                    "disDate" => $row['Discharge_Date'],
+                    "fee" => $row['Fee'],
                     "tId" => $row['Treatment_ID'],
                     "start" => $row['START_DATE'],
                     "end" => $row['END_DATE'],
@@ -747,7 +751,7 @@ class PatientModel extends DbModel
         } else {
             $sql = "SELECT 
                         P.Patient_ID, P.Last_Name, P.First_Name, P.Phone, P.Address, P.Date_Of_Birth, P.Gender, 
-                        EX.Exam_Date, EX.Second_Exam_Date, EX.Diagnosis, EX.Exam_ID,
+                        EX.Exam_Date, EX.Second_Exam_Date, EX.Diagnosis, EX.Exam_ID, EX.Fee,
                         M.Name, EM.Amount, M.Price,
                         CONCAT(E.Last_Name, ' ', E.First_Name) AS Doctor_Name
                     FROM 
@@ -790,6 +794,7 @@ class PatientModel extends DbModel
                     "exDate" => $row['Exam_Date'],
                     "secondDate" => $row['Second_Exam_Date'],
                     "diagnosis" => $row['Diagnosis'],
+                    "fee" => $row['Fee'],
                     "drug" => $row['Name'],
                     "amount" => $row['Amount'],
                     "price" => $row['Price'],

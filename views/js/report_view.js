@@ -14,6 +14,7 @@ function setUp() {
 
 
 function clearForm() {
+    clearPatientList();
     closeTreatmentList();
     closeExamList();
     search();
@@ -191,23 +192,85 @@ function showInpatientTreatment() {
 
     var tableBody = document.getElementById("treatmentListInfo");
     var lastId = 0;
+    var lastAId = 0;
 
     for (var index in patient) {
         if (patient[index].tId != lastId) {
+            // lastAId = 0;
             lastId = patient[index].tId;
         
             // Insert a row at the end of the table
             var newRow = tableBody.insertRow(-1);
             // newRow.setAttribute("class", "text-center");
 
+
             // Insert a cell in the row
-            var start = newRow.insertCell(0);
+            var adDate = newRow.insertCell(0);
+            var adDate_text = document.createElement("textarea");
+            adDate_text.setAttribute("readOnly", "true");
+            adDate_text.setAttribute("class", "form-control text-dark text-center");
+            adDate_text.setAttribute("aria-lable", "With textarea");
+            adDate_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
+            adDate_text.setAttribute("rows", "3");
+            adDate_text.setAttribute("cols", "8");
+            if (lastAId != patient[index].aId) {
+                var date = new Date(Date.parse(patient[index].adDate.date));
+                adDate_text.defaultValue = date.toDateString();
+            } else {
+                adDate_text.defaultValue = "_";
+            }
+            adDate.appendChild(adDate_text);
+
+
+            // Insert a cell in the row
+            var disDate = newRow.insertCell(1);
+            var disDate_text = document.createElement("textarea");
+            disDate_text.setAttribute("readOnly", "true");
+            disDate_text.setAttribute("class", "form-control text-dark text-center");
+            disDate_text.setAttribute("aria-lable", "With textarea");
+            disDate_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
+            disDate_text.setAttribute("rows", "3");
+            disDate_text.setAttribute("cols", "8");
+            if (lastAId != patient[index].aId) {
+                var date = "Not yet";
+                if (patient[index].disDate != null) {
+                    date = new Date(Date.parse(patient[index].disDate.date)).toDateString();
+                } else {
+                    disDate_text.classList.remove("text-dark");
+                    disDate_text.classList.add("text-primary");
+                }
+                disDate_text.defaultValue = date;
+            } else {
+                disDate_text.defaultValue = "_";
+            }
+            disDate.appendChild(disDate_text);
+
+
+            // Insert a cell in the row
+            var fee = newRow.insertCell(2);
+            var fee_text = document.createElement("textarea");
+            fee_text.setAttribute("readOnly", "true");
+            fee_text.setAttribute("class", "form-control text-dark text-center");
+            fee_text.setAttribute("aria-lable", "With textarea");
+            fee_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
+            fee_text.setAttribute("rows", "3");
+            fee_text.setAttribute("cols", "15");
+            if (lastAId != patient[index].aId) {
+                fee_text.defaultValue = currencyFormat(patient[index].fee);
+            } else {
+                fee_text.defaultValue = "_";
+            }
+            fee.appendChild(fee_text);
+
+
+            // Insert a cell in the row
+            var start = newRow.insertCell(3);
             var start_text = document.createElement("textarea");
             start_text.setAttribute("readOnly", "true");
             start_text.setAttribute("class", "form-control text-dark text-center");
             start_text.setAttribute("aria-lable", "With textarea");
             start_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
-            start_text.setAttribute("rows", "1");
+            start_text.setAttribute("rows", "3");
             start_text.setAttribute("cols", "8");
             var date = new Date(Date.parse(patient[index].start.date));
             start_text.defaultValue = date.toDateString();
@@ -215,45 +278,45 @@ function showInpatientTreatment() {
 
 
             // Insert a cell in the row
-            var end = newRow.insertCell(1);
+            var end = newRow.insertCell(4);
             var end_text = document.createElement("textarea");
             end_text.setAttribute("readOnly", "true");
             end_text.setAttribute("class", "form-control text-dark text-center");
             end_text.setAttribute("aria-lable", "With textarea");
             end_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
-            end_text.setAttribute("rows", "1");
+            end_text.setAttribute("rows", "3");
             end_text.setAttribute("cols", "8");
             end_text.defaultValue = new Date(Date.parse(patient[index].end.date)).toDateString();
             end.appendChild(end_text);
 
 
             // Insert a cell in the row
-            var result = newRow.insertCell(2);
+            var result = newRow.insertCell(5);
             var result_text = document.createElement("textarea");
             result_text.setAttribute("readOnly", "true");
-            result_text.setAttribute("class", "form-control text-dark text-center");
+            result_text.setAttribute("class", "form-control text-dark");
             result_text.setAttribute("aria-lable", "With textarea");
             result_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
-            result_text.setAttribute("rows", "1");
+            result_text.setAttribute("rows", "3");
             result_text.setAttribute("cols", "15");
             result_text.defaultValue = patient[index].result;
             result.appendChild(result_text);
 
 
             // Insert a cell in the row
-            var doctor = newRow.insertCell(2);
+            var doctor = newRow.insertCell(6);
             var doctor_text = document.createElement("textarea");
             doctor_text.setAttribute("readOnly", "true");
             doctor_text.setAttribute("class", "form-control text-dark text-center");
             doctor_text.setAttribute("aria-lable", "With textarea");
             doctor_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
-            doctor_text.setAttribute("rows", "1");
+            doctor_text.setAttribute("rows", "3");
             doctor_text.setAttribute("cols", "15");
             doctor_text.defaultValue = patient[index].doctor;
             doctor.appendChild(doctor_text);
 
             //Insert a cell in the row
-            var view = newRow.insertCell(4);
+            var view = newRow.insertCell(7);
             view.setAttribute("style", "width:10px; text-align: center;");
             view.setAttribute("id", index);
             var viewButton = document.createElement("button");
@@ -263,6 +326,10 @@ function showInpatientTreatment() {
                 viewTreatment(this.parentNode.id);
             };
             view.appendChild(viewButton);
+
+            if (lastAId != patient[index].aId) {
+                lastAId = patient[index].aId;
+            }
         }
     }
     document.getElementById("treatmentListForm").style.display = "block";
@@ -502,7 +569,8 @@ function viewExamination(index) {
 
         total = parseFloat(total) + parseFloat(patient[i].price) * parseFloat(patient[i].amount);
     }
-    document.getElementById("outTotal").value = currencyFormat(parseFloat(total)); 
+    // document.getElementById("outTotal").value = currencyFormat(parseFloat(total)); 
+    document.getElementById("outTotal").value = currencyFormat(patient[index].fee);
 
     document.getElementById("examListForm").style.display = "none";
     document.getElementById("examBtn").style.display = "block";
@@ -564,15 +632,6 @@ function closeExamList() {
     // search();
 }
 
-function clearPatientList() {
-    document.getElementById("patientListForm").style.display = "none";
-    var tableBody = document.getElementById("patientListInfo");
-    for (var i = tableBody.rows.length - 1; i >= 0; i--) {
-        tableBody.deleteRow(i);
-    }
-}
-
-
 function clearTreatmentInfo() {
     document.getElementById("inpatientForm").reset();
     document.getElementById("inpatientForm").style.display = "none";
@@ -581,6 +640,15 @@ function clearTreatmentInfo() {
         tableBody.deleteRow(i);
     }
 }
+
+function clearPatientList() {
+    document.getElementById("patientListForm").style.display = "none";
+    var tableBody = document.getElementById("patientListInfo");
+    for (var i = tableBody.rows.length - 1; i >= 0; i--) {
+        tableBody.deleteRow(i);
+    }
+}
+
 
 function search() {
     patient = "";
@@ -598,8 +666,6 @@ function search() {
         if (this.readyState == 4 && this.status == 200) {
             document.getElementById("searching").value = "";
             document.getElementById("searching").style.display = "none";
-            clearTreatmentInfo();
-            clearPatientList();
             var result = this.responseText;
             // console.log(result);	
             if (result != false) {
@@ -640,6 +706,7 @@ function getInpatientTreatment(index) {
                 console.log(data);
                 patient = data;
                 // console.log(patient);
+                document.getElementById("searchInput").value = "";
                 showInpatientTreatment();
             } else {
                 alert("Fail to get information of patient...");
@@ -672,6 +739,7 @@ function getOutpatientExamination(index) {
                 console.log(data);
                 patient = data;
                 // console.log(patient);
+                document.getElementById("searchInput").value = "";
                 showOutpatientTreatment();
             } else {
                 alert("Fail to get information of patient...");
