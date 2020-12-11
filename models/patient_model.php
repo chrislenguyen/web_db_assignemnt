@@ -136,7 +136,8 @@ class PatientModel extends DbModel
             $patientList = array();
 
             $sql = "SELECT 
-                        P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, A.Admission_Date, A.Discharge_Date, T.START_DATE, T.END_DATE, T.Result, 
+                        P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, 
+                        A.Admission_ID, A.Admission_Date, A.Discharge_Date, T.START_DATE, T.END_DATE, T.Result, 
                         CONCAT(N.Last_Name, ' ', N.First_Name) as Nurse_Name, CONCAT(e.Last_Name, ' ', E.First_Name) AS Doctor_Name
                     FROM 
                         hospital.INPATIENT AS P
@@ -183,6 +184,7 @@ class PatientModel extends DbModel
                     "fName" => $row['First_Name'],
                     "lName" => $row['Last_Name'],
                     "phone" => $row['Phone'],
+                    "aId" => $row['Admission_ID'],
                     "adDate" => $row['Admission_Date'],
                     "disDate" => $row['Discharge_Date'],
                     "start" => $row['START_DATE'],
@@ -508,6 +510,8 @@ class PatientModel extends DbModel
             die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
             return false;
         } else {
+            $patientList = array();
+
             $sql ="SELECT 
                         P.Patient_ID, P.Last_Name, P.First_Name, P.Phone, P.Address, P.Date_Of_Birth, P.Gender, 
                         EX.Exam_Date, EX.Second_Exam_Date, EX.Diagnosis, EX.Exam_ID, EX.Fee,
@@ -527,7 +531,7 @@ class PatientModel extends DbModel
                     ORDER BY
                         P.Patient_ID, EX.Exam_ID";
 
-            $outpatient = array();
+            $outpatientList = array();
             $stmt = sqlsrv_prepare($conn, $sql, array());
             if( !$stmt ) {
                 die( print_r( sqlsrv_errors(), true));
@@ -536,13 +540,13 @@ class PatientModel extends DbModel
             $getResults = sqlsrv_execute($stmt);
             // echo ("Reading data from table" . PHP_EOL);
             if ($getResults == FALSE) {
-                die (print_r( sqlsrv_errors(), true));
+                // echo (print_r( sqlsrv_errors(), true));
                 // echo json_encode(sqlsrv_errors());
                 // echo json_encode("WHY");
                 return false;
             } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 // echo implode($row);
-                $outpatient[] = array (
+                $outpatientList[] = array (
                     "pId" => $row['Patient_ID'],
                     "fName" => $row['First_Name'],
                     "lName" => $row['Last_Name'],
@@ -561,10 +565,11 @@ class PatientModel extends DbModel
                     "exDate" => $row['Expiration_Date']
                 );
             }
-            if (sizeof($outpatient) < 1) {
+            $patientList[] = $outpatientList;
+            if (sizeof($patientList) < 1) {
                 return -1;
             }
-            return $outpatient;
+            return $patientList;
             // return true;
             // return $doctorList;
         }

@@ -173,6 +173,7 @@ function viewInpatientInfo(index) {
     // console.log(index);
     // console.log(inpatientList[index].pId);
     var tableBody = document.getElementById("inpatientInfo");
+    var lastId = 0;
     
     document.getElementById("inpatientId").value = inpatientList[index].pId;
     document.getElementById("infirstName").value = inpatientList[index].fName;
@@ -194,9 +195,13 @@ function viewInpatientInfo(index) {
             adDate_text.setAttribute("aria-lable", "With textarea");
             adDate_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
             adDate_text.setAttribute("rows", "2");
-            adDate_text.setAttribute("cols", "2");
-            var date = new Date(Date.parse(inpatientList[i].adDate.date));
-            adDate_text.defaultValue = date.toDateString();
+            adDate_text.setAttribute("cols", "3");
+            if (lastId != inpatientList[i].aId) {
+                var date = new Date(Date.parse(inpatientList[i].adDate.date));
+                adDate_text.defaultValue = date.toDateString();
+            } else {
+                adDate_text.defaultValue = "_";
+            }
             adDate.appendChild(adDate_text);
 
 
@@ -204,18 +209,23 @@ function viewInpatientInfo(index) {
             var disDate = newRow.insertCell(1);
             var disDate_text = document.createElement("textarea");
             disDate_text.setAttribute("readOnly", "true");
-            disDate_text.setAttribute("class", "form-control text-primary text-center");
+            disDate_text.setAttribute("class", "form-control text-dark text-center");
             disDate_text.setAttribute("aria-lable", "With textarea");
             disDate_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
             disDate_text.setAttribute("rows", "2");
-            disDate_text.setAttribute("cols", "2");
-            var date = "Not yet";
-            if (inpatientList[i].disDate != null) {
-                date = new Date(Date.parse(inpatientList[i].disDate.date)).toDateString();
-                disDate_text.classList.remove("text-primary");
-                disDate_text.classList.add("text-dark");
-            } 
-            disDate_text.defaultValue = date;
+            disDate_text.setAttribute("cols", "3");
+            if (lastId != inpatientList[i].aId) {
+                var date = "Not yet";
+                if (inpatientList[i].disDate != null) {
+                    date = new Date(Date.parse(inpatientList[i].disDate.date)).toDateString();
+                } else {
+                    disDate_text.classList.remove("text-dark");
+                    disDate_text.classList.add("text-primary");
+                }
+                disDate_text.defaultValue = date;
+            } else {
+                disDate_text.defaultValue = "_";
+            }
             disDate.appendChild(disDate_text);
 
 
@@ -227,7 +237,7 @@ function viewInpatientInfo(index) {
             start_text.setAttribute("aria-lable", "With textarea");
             start_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
             start_text.setAttribute("rows", "2");
-            start_text.setAttribute("cols", "2");
+            start_text.setAttribute("cols", "3");
             var date = new Date(Date.parse(inpatientList[i].start.date));
             start_text.defaultValue = date.toDateString();
             start.appendChild(start_text);
@@ -241,7 +251,7 @@ function viewInpatientInfo(index) {
             end_text.setAttribute("aria-lable", "With textarea");
             end_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
             end_text.setAttribute("rows", "2");
-            end_text.setAttribute("cols", "2");
+            end_text.setAttribute("cols", "3");
             var date = new Date(Date.parse(inpatientList[i].end.date));
             end_text.defaultValue = date.toDateString();
             end.appendChild(end_text);
@@ -268,7 +278,7 @@ function viewInpatientInfo(index) {
             doctor_text.setAttribute("aria-lable", "With textarea");
             doctor_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
             doctor_text.setAttribute("rows", "2");
-            doctor_text.setAttribute("cols", "2");
+            doctor_text.setAttribute("cols", "3");
             doctor_text.defaultValue = inpatientList[i].doctor;
             doctor.appendChild(doctor_text);
 
@@ -281,10 +291,13 @@ function viewInpatientInfo(index) {
             nurse_text.setAttribute("aria-lable", "With textarea");
             nurse_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
             nurse_text.setAttribute("rows", "2");
-            nurse_text.setAttribute("cols", "2");
+            nurse_text.setAttribute("cols", "3");
             nurse_text.defaultValue = inpatientList[i].nurse;
             nurse.appendChild(nurse_text);
 
+            if (lastId != inpatientList[i].aId) {
+                lastId = inpatientList[i].aId;
+            }
             // break;
         }
     }

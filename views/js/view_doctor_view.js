@@ -15,9 +15,9 @@ function activeSearchNav() {
     search.classList.add("active");
 }
 
-function createPatientInfoForm(patientList) {
+function createOutpatientInfoForm(patientList) {
     totalFee = Number(0);
-    var form = document.getElementById("patientForm");
+    var form = document.getElementById("outpatientForm");
     var newForm = form.cloneNode(true);
     var lastId = 0;
     var examId = 0;
@@ -59,7 +59,7 @@ function createPatientInfoForm(patientList) {
             newTable = children[3].cloneNode(true);
             var examFee = showExamination(newTable.children, patientList, index);
         }
-        var drugFee = showDrug(newTable.children, patientList, index);
+        var drugFee = showExamDrug(newTable.children, patientList, index);
 
         // var fee = children[2].children[4].children[1];
 
@@ -137,7 +137,7 @@ function showExamination(table, patientList, index) {
 }
 
 
-function showDrug(table, patientList, index) {
+function showExamDrug(table, patientList, index) {
     var drugTable = table[1].children;
     
     var newRow = drugTable[1].insertRow(-1);
@@ -262,7 +262,7 @@ function getDoctorList() {
 
 function openPatientList() {
     clearPatientDetail();
-    document.getElementById("patientForm").reset();
+    document.getElementById("outpatientForm").reset();
     var doctorSelect = document.getElementById("doctorList");
     var dId = doctorSelect.options[doctorSelect.selectedIndex].id;
 
@@ -278,7 +278,7 @@ function openPatientList() {
             } else if (result != false) {
                 var data = JSON.parse(result);
                 console.log(data);
-                createPatientInfoForm(data)
+                createOutpatientInfoForm(data[0]);
             } else {
                 alert("Fail to get patient information!");
             }
