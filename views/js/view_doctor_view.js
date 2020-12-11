@@ -69,7 +69,6 @@ function createPatientInfoForm(patientList) {
 
         newTable.removeAttribute("id");
         newTable.style.display = "block";
-        newForm.appendChild(document.createElement("br"));
         newForm.appendChild(newTable);
     }
     // if (patientList.length > 0) {

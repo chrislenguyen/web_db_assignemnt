@@ -136,7 +136,8 @@ class PatientModel extends DbModel
             $patientList = array();
 
             $sql = "SELECT 
-                        P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, A.Admission_Date, A.Discharge_Date, T.START_DATE, T.END_DATE, T.Result, CONCAT(e.Last_Name, ' ', E.First_Name) AS Doctor_Name
+                        P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, A.Admission_Date, A.Discharge_Date, T.START_DATE, T.END_DATE, T.Result, 
+                        CONCAT(N.Last_Name, ' ', N.First_Name) as Nurse_Name, CONCAT(e.Last_Name, ' ', E.First_Name) AS Doctor_Name
                     FROM 
                         hospital.INPATIENT AS P
                     JOIN 
@@ -145,6 +146,8 @@ class PatientModel extends DbModel
                         hospital.TREATMENT AS T ON T.Admission_ID = A.Admission_ID
                     JOIN 
                         hospital.TREATMENT_DOCTOR AS TD ON TD.Treatment_ID = T.Treatment_ID AND A.Admission_ID = TD.Admission_ID
+                    JOIN
+                        hospital.EMPLOYEE AS N ON N.Employee_ID = A.Nurse_ID
                     JOIN 
                         hospital.EMPLOYEE AS E ON E.Employee_ID = TD.Doctor_ID
                     WHERE 
@@ -158,7 +161,9 @@ class PatientModel extends DbModel
                         OR 
                         CONCAT(P.First_Name, ' ', P.Last_Name) LIKE ?
                         OR 
-                        P.Patient_ID LIKE ?";
+                        P.Patient_ID LIKE ?
+                    ORDER BY
+                        P.Patient_ID";
 
             $stmt = sqlsrv_prepare($conn, $sql, array("$patientName", "$patientName%", "%$patientName", "$patientName%", "$patientName%", "$patientName%"));
             if( !$stmt ) {
@@ -183,55 +188,60 @@ class PatientModel extends DbModel
                     "start" => $row['START_DATE'],
                     "end" => $row['END_DATE'],
                     "result" => $row['Result'],
-                    "doctor" => $row['Doctor_Name']
+                    "doctor" => $row['Doctor_Name'],
+                    "nurse" => $row['Nurse_Name']
                 );
             }
             $patientList[] = $inpatientList;
 
 
-            // $sql = "SELECT 
-            //             P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, A.Admission_Date, A.Discharge_Date, T.START_DATE, T.END_DATE, T.Result, CONCAT(e.Last_Name, ' ', E.First_Name) AS Doctor_Name
-            //         FROM 
-            //             hospital.INPATIENT AS P
-            //         JOIN 
-            //             hospital.ADMISSION AS A ON A.Patient_ID = P.Patient_ID
-            //         JOIN 
-            //             hospital.TREATMENT AS T ON T.Admission_ID = A.Admission_ID
-            //         JOIN 
-            //             hospital.TREATMENT_DOCTOR AS TD ON TD.Treatment_ID = T.Treatment_ID AND A.Admission_ID = TD.Admission_ID
-            //         JOIN 
-            //             hospital.EMPLOYEE AS E ON E.Employee_ID = TD.Doctor_ID
-            //         WHERE 
-            //             P.First_Name = ?
-            //             OR 
-            //             P.Last_Name LIKE ?
-            //             OR
-            //             P.Last_Name LIKE ?
-            //             OR 
-            //             CONCAT(P.Last_Name, ' ', P.First_Name) LIKE ?
-            //             OR 
-            //             CONCAT(P.First_Name, ' ', P.Last_Name) LIKE ?
-            //             OR 
-            //             P.Patient_ID LIKE ?";
+            $sql = "SELECT 
+                        P.Patient_ID, P.Last_Name, P.First_Name, P.Phone, EX.Exam_Date, EX.Second_Exam_Date, 
+                        CONCAT(E.Last_Name, ' ', E.First_Name) AS Doctor_Name, EX.Diagnosis
+                    FROM 
+                        hospital.OUTPATIENT AS P
+                    JOIN 
+                        hospital.EXAMINATION AS EX ON EX.Patient_ID = P.Patient_ID
+                    JOIN
+                        hospital.EMPLOYEE AS E ON E.Employee_ID = EX.Doctor_Exam_ID
+                    WHERE 
+                        P.First_Name = ?
+                        OR 
+                        P.Last_Name LIKE ?
+                        OR
+                        P.Last_Name LIKE ?
+                        OR 
+                        CONCAT(P.Last_Name, ' ', P.First_Name) LIKE ?
+                        OR 
+                        CONCAT(P.First_Name, ' ', P.Last_Name) LIKE ?
+                        OR 
+                        P.Patient_ID LIKE ?";
 
-            // $stmt = sqlsrv_prepare($conn, $sql, array("$patientName", "$patientName%", "%$patientName", "$patientName%", "$patientName%", "$patientName%"));
-            // if( !$stmt ) {
-            //     echo ( print_r( sqlsrv_errors(), true));
-            //     return false;
-            // }
-            // $getResults = sqlsrv_execute($stmt);
+            $stmt = sqlsrv_prepare($conn, $sql, array("$patientName", "$patientName%", "%$patientName", "$patientName%", "$patientName%", "$patientName%"));
+            if( !$stmt ) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
 
-            // if ($getResults == FALSE) {
-            //     echo ( print_r( sqlsrv_errors(), true));
-            //     return false;
-            // } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-            //     $patient = new Patient();
-            //     $patient->setpId($row['Patient_ID']);
-            //     $patient->setFName($row['First_Name']);
-            //     $patient->setLName($row['Last_Name']);
-            //     $patient->setPhone($row['Phone']);
-            //     $patientList[] = $patient;
-            // }
+            if ($getResults == FALSE) {
+                echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            } 
+            $outpatientList = array();
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $outpatientList[] = array(
+                    "pId" => $row['Patient_ID'],
+                    "fName" => $row['First_Name'],
+                    "lName" => $row['Last_Name'],
+                    "phone" => $row['Phone'],
+                    "exDate" => $row['Exam_Date'],
+                    "secondDate" => $row['Second_Exam_Date'],
+                    "doctor" => $row['Doctor_Name'],
+                    "diagnosis" => $row['Diagnosis']
+                );
+            }
+            $patientList[] = $outpatientList;
 
             return $patientList;
         }
