@@ -28,7 +28,7 @@ function activeReportNav() {
 
 function currencyFormat(num) {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-  }
+}
 
 function showInPatient() {
     var tableBody = document.getElementById("patientListInfo");

@@ -566,6 +566,72 @@ class PatientModel extends DbModel
                 );
             }
             $patientList[] = $outpatientList;
+
+
+            $sql ="SELECT 
+                        P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, P.Address, P.Date_Of_Birth, P.Gender, 
+                        A.Admission_ID, A.Fee, A.Admission_Date, A.Discharge_Date, A.Diagnosis, A.Fee,
+                        T.Treatment_ID, T.START_DATE, T.END_DATE, T.Result, 
+                        M.Name, TM.Amount, M.Price,  M.Expiration_Date
+                    FROM 
+                        hospital.INPATIENT AS P
+                    JOIN 
+                        hospital.ADMISSION AS A ON A.Patient_ID = P.Patient_ID
+                    JOIN 
+                        hospital.TREATMENT AS T ON T.Admission_ID = A.Admission_ID
+                    JOIN 
+                        hospital.TREATMENT_DOCTOR AS TD ON TD.Treatment_ID = T.Treatment_ID AND A.Admission_ID = TD.Admission_ID
+                    JOIN 
+                        hospital.EMPLOYEE AS E ON E.Employee_ID = TD.Doctor_ID
+                    JOIN 
+                        hospital.TREATMENT_MEDICATION AS TM ON TM.Admission_ID = A.Admission_ID AND TM.Treatment_ID = T.Treatment_ID
+                    JOIN 
+                        hospital.MEDICATION AS M ON M.Drug_Code = TM.Drug_Code
+                    WHERE
+                        TD.Doctor_ID = $dId
+                    ORDER BY
+                        P.Patient_ID, A.Admission_ID";
+
+            $inpatientList = array();
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+            // echo ("Reading data from table" . PHP_EOL);
+            if ($getResults == FALSE) {
+                echo (print_r( sqlsrv_errors(), true));
+                // echo json_encode(sqlsrv_errors());
+                // echo json_encode("WHY");
+                return false;
+            } while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                // echo implode($row);
+                $inpatientList[] = array (
+                    "pId" => $row['Patient_ID'],
+                    "fName" => $row['First_Name'],
+                    "lName" => $row['Last_Name'],
+                    "phone" => $row['Phone'],
+                    "addr" => $row['Address'],
+                    "gender" => $row['Gender'],
+                    "dob" => $row['Date_Of_Birth'],
+                    "adId" => $row['Admission_ID'],
+                    "adDate" => $row['Admission_Date'],
+                    "disDate" => $row['Discharge_Date'],
+                    "diagnosis" => $row['Diagnosis'],
+                    "start" => $row['START_DATE'],
+                    "end" => $row['END_DATE'],
+                    "result" => $row['Result'],
+                    "fee" => $row['Fee'],
+                    "drug" => $row['Name'],
+                    "amount" => $row['Amount'],
+                    "price" => $row['Price'],
+                    "exDate" => $row['Expiration_Date']
+                );
+            }
+            $patientList[] = $inpatientList;
+
+
             if (sizeof($patientList) < 1) {
                 return -1;
             }
