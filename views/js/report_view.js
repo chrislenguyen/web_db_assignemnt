@@ -1,6 +1,6 @@
 var ajax = new XMLHttpRequest();
 var method = "GET";
-var url = "controllers/database_ptj.php?";
+var url = "controllers/database_controller.php?";
 var asynchronous = true;
 
 var inpatientList;

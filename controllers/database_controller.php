@@ -110,8 +110,8 @@
             $_REQUEST["fee"],
             test_input($_REQUEST["diagnosis"])
         );
-        if ($result == true) {
-            echo true;
+        if ($result != false) {
+            echo json_encode($result);
         } else {
             echo false;
         }
@@ -144,6 +144,21 @@
             $_SESSION["pass"],
             $_REQUEST["pId"],
             $_REQUEST["examId"],
+            $_REQUEST["code"],
+            $_REQUEST["amount"]
+        );
+        if ($result == true) {
+            echo true;
+        } else {
+            echo false;
+        }
+    } elseif ($_REQUEST["function"] == "addDrugTreatment") {
+        $patientModel = new PatientModel();
+        $result = $patientModel->callProcNewTreatmentMedication(
+            $_SESSION["name"], 
+            $_SESSION["pass"],
+            $_REQUEST["aId"],
+            $_REQUEST["tId"],
             $_REQUEST["code"],
             $_REQUEST["amount"]
         );

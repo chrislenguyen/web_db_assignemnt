@@ -40,47 +40,6 @@ class Patient {
 
 }
 
-class Inpatient extends Patient {
-    private $adDate;
-    private $disDate;
-    private $start;
-    private $end;
-    private $result;
-    private $doctor;
-
-    public function getAdDate() {
-        return $this->adDate;
-    }
-
-    public function getDisDate() {
-        return $this->disDate;
-    }
-
-    public function getStart() {
-        return $this->start;
-    }
-
-    public function getEnd() {
-        return $this->end;
-    }
-
-    public function setAdDate($adDate) {
-        $this->adDate = $adDate;
-    }
-
-    public function setDisDate($disDate) {
-        $this->disDate = $disDate;
-    }
-
-    public function setStart($start) {
-        $this->start = $start;
-    }
-
-    public function setEnd($end) {
-        $this->end = $end;
-    }
-
-}
 
 class Drug {
     private $drugCode;
@@ -120,6 +79,7 @@ class Drug {
         $this->price = $price;
     }
 }
+
 
 class PatientModel extends DbModel 
 {
@@ -341,12 +301,46 @@ class PatientModel extends DbModel
                 // echo json_encode("WHY");
                 return false;
             }
+
+            $sql = "SELECT 
+                        A.Patient_ID, A.Admission_ID
+                    FROM 
+                        hospital.ADMISSION AS A
+                    JOIN 
+                        hospital.INPATIENT AS P ON P.Patient_ID = A.Patient_ID
+                    JOIN (SELECT MAX(Patient_ID) as MAX FROM hospital.INPATIENT) J
+                    ON A.Patient_ID = J.[MAX]";
+
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+            if( !$stmt ) {
+                // echo ( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+            // echo ("Reading data from table" . PHP_EOL);
+            if ($getResults == FALSE) {
+                die (print_r( sqlsrv_errors(), true));
+                // echo json_encode(sqlsrv_errors());
+                // echo json_encode("WHY");
+                return false;
+            }  
+            $result = array();
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $result[] = array (
+                    "pId" => $row['Patient_ID'],
+                    "aId" => $row['Admission_ID']
+                );
+            }
+            if (sizeof($result) != 1) {
+                return false;
+            }
+            // echo $result[0] . $result[1];
+            return $result;
             // echo "OK";
-            return true;
+            // return true;
         }
     }
     
-
     public function callProcAddNewOutPatient(
         $name, 
         $pass,
@@ -424,6 +418,42 @@ class PatientModel extends DbModel
             }
             // echo "OK";
             return $result[0];
+        }
+    }
+
+    public function callProcNewTreatmentMedication(
+        $name,
+        $pass,
+        $aId,
+        $tId,
+        $code,
+        $amount
+    ) {
+        $conn = $this->connect($name, $pass);
+        if (!$conn) {
+            die( print_r( sqlsrv_errors(SQLSRV_ERR_ALL), true));
+            return false;
+        } else {
+            $sql = "EXEC hospital.NewTreatmentMedication
+                        @Admission_ID = $aId,
+                        @Treatment_ID = $tId,
+                        @Drug_Code = '$code',
+                        @Amount = '$amount'"; 
+
+            $stmt = sqlsrv_prepare($conn, $sql, array());
+            if( !$stmt ) {
+                die( print_r( sqlsrv_errors(), true));
+                return false;
+            }
+            $getResults = sqlsrv_execute($stmt);
+            // echo ("Reading data from table" . PHP_EOL);
+            if ($getResults == FALSE) {
+                die (print_r( sqlsrv_errors(), true));
+                // echo json_encode(sqlsrv_errors());
+                // echo json_encode("WHY");
+                return false;
+            } 
+            return true;
         }
     }
 

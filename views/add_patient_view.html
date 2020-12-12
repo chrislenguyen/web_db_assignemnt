@@ -80,10 +80,6 @@
 
                 <div class="row form-group">
                     <div class="col col-1"></div>
-                    <!-- <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
-                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Nurse ID</textarea>
-                    <input class="col col-2" id="nurseId" class="form-control" type="text"> -->
-
                     <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
                     style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Nurse</textarea>
                     <select class="col col-2 custom-select" name="nurseListIn" id="nurseListIn" required>
@@ -92,17 +88,11 @@
 
                     <div class="col col-1"></div>
 
-                    <!-- <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
-                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Doctor ID</textarea>
-                    <input class="col col-2" id="doctorId" class="form-control" type="text"> -->
-
                     <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
                     style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Doctor</textarea>
                     <select class="col col-2 custom-select" name="doctorListIn" id="doctorListIn" required>
                         <option value=""></option>
                     </select>
-
-                    <!-- <div class="col col-1"></div> -->
                 </div>
 
 
@@ -115,8 +105,8 @@
                     <div class="col col-1"></div>
 
                     <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
-                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Fee</textarea>
-                    <input class="col col-2" id="feeIn" class="form-control" type="text">
+                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Admission fee</textarea>
+                    <input class="col col-2" id="feeIn" class="form-control" type="text" onchange="updateInTotalFee()">
                 </div>
 
 
@@ -125,8 +115,52 @@
                     style="border: none; box-shadow: none; resize: none; background-color: white;">Diagnosis</textarea>
                     <input class="col col-10" id="diagnosisIn" class="form-control" type="text">
                 </div>
-                <br>
                 
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Drug Name</textarea>
+                    <select class="col col-3 custom-select" name="drugNameIn" id="drugNameIn" required>
+                        <option value=""></option>
+                    </select>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Amount</textarea>
+                    <input class="col col-2" type="number" min="1" id="amountIn">
+
+                    <div class="col col-1"></div>
+
+                    <button id="inBtnAdd" type="button" class="btn btn-primary btn-block" style="width:80px; text-align:center;" onclick="getDrugIn()">Add</button>	
+                </div>
+
+
+                <div id="drugFormIn" style="display: none;" class="p-3 mb-2 bg-white text-dark">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr class="text-center">
+                                <th scope="col">Code</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Effects</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+    
+                        <tbody id="drugInfoIn">
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Total Fee</textarea>
+                    <textarea id="totalFeeIn" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;">0</textarea>
+                </div>
+                
+
                 <div class="row justify-content-md-center">
 					<button id="btnIn" type="button" class="btn btn-primary btn-block" style="width:150px; text-align:center;" onclick="submitInpatienForm()">Submit</button>	
 				</div>	
@@ -192,20 +226,6 @@
                 </div>
 
 
-                <!-- <div class="row form-group"> -->
-                    <!-- <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
-                    style="border: none; box-shadow: none; resize: none; background-color: white;">Doctor Exam ID</textarea>
-                    <input class="col col-3" id="doctorExamId" class="form-control" type="text"> -->
-                    <!-- <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
-                    style="border: none; box-shadow: none; resize: none; background-color: white;">Doctor</textarea>
-                    <select class="col col-2 custom-select" name="doctorListOut" id="doctorListOut" required>
-                        <option value=""></option> -->
-                    <!-- </select> -->
-
-                    <!-- <div class="col col-1"></div> -->
-                <!-- </div> -->
-
-
                 <div class="row form-group">
                     <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
                     style="border: none; box-shadow: none; resize: none; background-color: white;">Exam date</textarea>
@@ -216,8 +236,6 @@
                     <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
                     style="border: none; box-shadow: none; resize: none; background-color: white;">Second exam date</textarea>
                     <input class="col col-3" type="date" id="secondDate">
-
-                    <!-- <div class="col col-1"></div> -->
                 </div>
 
 
