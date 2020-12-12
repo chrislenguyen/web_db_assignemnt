@@ -78,6 +78,7 @@ function createInpatientInfoForm(patientList) {
             newForm.appendChild(newTable);
         }
         if (tId != patientList[index].tId) {
+            console.log(tId + " " + patientList[index].tId);
             tId = patientList[index].tId;
             newTreatment = newTable.children[1].cloneNode(true);
             showTreatment(newTreatment, patientList, index);
@@ -340,7 +341,7 @@ function showExamDrug(table, patientList, index) {
     drug_text.setAttribute("style", "border: none; resize: none; box-shadow: none; background-color: white;");
     drug_text.setAttribute("rows", "1");
     drug_text.setAttribute("cols", "2");
-    drug_text.defaultValue = patientList[index].drug;
+    drug_text.defaultValue = patientList[index].name;
     drug.appendChild(drug_text);
 
     //**********************************Insert a cell in the row**********************************//

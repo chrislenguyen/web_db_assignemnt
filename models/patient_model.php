@@ -84,7 +84,7 @@ class Drug {
 class PatientModel extends DbModel 
 {
     public function queryGetPatientNameList(
-        $patientName, 
+        $searchStr, 
         $name, 
         $pass
     ) {
@@ -126,7 +126,8 @@ class PatientModel extends DbModel
                     ORDER BY
                         P.Patient_ID";
 
-            $stmt = sqlsrv_prepare($conn, $sql, array("$patientName", "$patientName%", "%$patientName", "$patientName%", "$patientName%", "$patientName%"));
+            $stmt = sqlsrv_prepare($conn, $sql, array("$searchStr", "$searchStr%", "%$searchStr", "$searchStr%", "$searchStr%", "$searchStr%"));
+
             if( !$stmt ) {
                 echo ( print_r( sqlsrv_errors(), true));
                 return false;
@@ -179,7 +180,7 @@ class PatientModel extends DbModel
                         OR 
                         P.Patient_ID LIKE ?";
 
-            $stmt = sqlsrv_prepare($conn, $sql, array("$patientName", "$patientName%", "%$patientName", "$patientName%", "$patientName%", "$patientName%"));
+            $stmt = sqlsrv_prepare($conn, $sql, array("$searchStr", "$searchStr%", "%$searchStr", "$searchStr%", "$searchStr%", "$searchStr%"));
             if( !$stmt ) {
                 echo ( print_r( sqlsrv_errors(), true));
                 return false;
@@ -600,9 +601,9 @@ class PatientModel extends DbModel
 
             $sql ="SELECT 
                         P.Patient_ID, P.First_Name, P.Last_Name, P.Phone, P.Address, P.Date_Of_Birth, P.Gender, 
-                        A.Admission_ID, A.Fee, A.Admission_Date, A.Discharge_Date, A.Diagnosis, A.Fee,
+                        A.Admission_ID, A.Fee, A.Admission_Date, A.Discharge_Date, A.Diagnosis, 
                         T.Treatment_ID, T.START_DATE, T.END_DATE, T.Result, 
-                        M.Name, TM.Amount, M.Price,  M.Expiration_Date
+                        M.Name, TM.Amount, M.Price, M.Expiration_Date
                     FROM 
                         hospital.INPATIENT AS P
                     JOIN 
@@ -620,7 +621,7 @@ class PatientModel extends DbModel
                     WHERE
                         TD.Doctor_ID = $dId
                     ORDER BY
-                        P.Patient_ID, A.Admission_ID";
+                        P.Patient_ID, A.Admission_ID, T.Treatment_ID";
 
             $inpatientList = array();
             $stmt = sqlsrv_prepare($conn, $sql, array());
@@ -649,6 +650,7 @@ class PatientModel extends DbModel
                     "adDate" => $row['Admission_Date'],
                     "disDate" => $row['Discharge_Date'],
                     "diagnosis" => $row['Diagnosis'],
+                    "tId" => $row['Treatment_ID'],
                     "start" => $row['START_DATE'],
                     "end" => $row['END_DATE'],
                     "result" => $row['Result'],
@@ -767,6 +769,7 @@ class PatientModel extends DbModel
         }
     }
     
+
     public function queyGetAllTreatmentByPatientId($name, $pass, $pId) {
         $conn = $this->connect($name, $pass);
         if (!$conn) {
