@@ -1,6 +1,11 @@
 <?php
-session_start();
-include 'common_controller.php';
-$common = new Common();
-$var = $common->checkLogin();
-echo json_encode($var);
+    session_start();
+    if (isset($_SESSION['name'])) {
+        $var = array(
+            "name" => $_SESSION['name'],
+        );
+    } else {
+        $var = false;
+    }
+    echo json_encode($var);
+?>

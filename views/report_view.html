@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<script src="views/js/report_view.js"></script>
+</head>
+
+<body onload="setUp()">
+	<div class="container content">
+        <div class="p-5 mb-2 bg-light text-dark">
+            <form class="form-inline md-form mr-auto mb-4 justify-content-md-center">
+                <input id="searchInput" onkeypress="return event.keyCode != 13;" onkeyup="clearForm()" class="col col-3 form-control mr-sm-2" type="text" placeholder="Search patient..." aria-label="Search">
+                <button id="searchBtn" class="btn btn-primary btn-rounded btn-sm my-0" type="button" onclick="clearForm()">Search</button>
+            </form> 
+
+            <div class="row alert alert-primary" role="alert" id="searching" style="display: none;">
+            </div>
+
+            
+            <div id="patientListForm" style="display:none;" class="p-3 mb-2 bg-white text-dark">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">ID</th>
+                            <th scope="col">First name</th>
+                            <th scope="col">Last name</th>
+                            <th scope="col">Phone number</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="patientListInfo">
+                    </tbody>
+                </table>
+            </div>
+
+
+
+            <form id="treatmentListForm" style="display: none;" class="form-group p-5 mb-2 bg-white text-dark">      
+                <button type="button" class="close" aria-label="Close" onclick="clearForm()">
+					<span aria-hidden="true">&times;</span>
+                </button>
+                            
+                <div class="row justify-content-md-center">
+                    <label style="font-size: 25px;">Treatments of inpatient</label>
+                </div>
+                <br>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Patient ID</textarea>
+                    <textarea id="treatmentpId" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">First Name</textarea>
+                    <textarea id="treatmentfName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Last Name</textarea>
+                    <textarea id="treatmentlName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+                <br>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th style="width: 105px;" scope="col">In date</th>
+                            <th style="width: 105px;" scope="col">Out date</th>
+                            <th style="width: 150px;" scope="col">Fee</th>
+                            <th style="width: 105px;" scope="col">Start</th>
+                            <th style="width: 105px;" scope="col">End</th>
+                            <th scope="col">Result</th>
+                            <th style="width: 150px;" scope="col">Doctor</th>
+                            <th style="width: 20px;" scope="col"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="treatmentListInfo">
+                    </tbody>
+                </table>
+            </form>
+
+
+            <div id="paymentBtn" class="row" style="display: none;">
+                <button id="paymentBackBtn" type="button" class="btn btn-primary btn-block" style="width:100px;" onclick="backToTreatmentList()">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i> Back</button>	
+            </div>
+            <br>
+
+            <form id="inpatientForm" style="display: none;" class="form-group p-5 mb-2 bg-white text-dark">   
+                <div class="row justify-content-md-center">
+                    <label style="font-size: 25px;">Information about payment</label>
+                </div>
+                <br>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Patient ID</textarea>
+                    <textarea id="inpatientId" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Gender</textarea>
+                    <textarea id="inGender" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">First Name</textarea>
+                    <textarea id="inFName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Last Name</textarea>
+                    <textarea id="inLName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Phone Number</textarea>
+                    <textarea id="inPhone" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Date of birth</textarea>
+                    <textarea id="inDob" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Address</textarea>
+                    <textarea id="inAddr" class="col form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Start Date</textarea>
+                    <textarea id="inStart" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">End Date</textarea>
+                    <textarea id="inEnd" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Result</textarea>
+                    <textarea id="inResult" class="col form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+                <br>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">Drug Name</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Price</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inpatientInfo">
+                    </tbody>
+                </table>
+                <br>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Doctor Name</textarea>
+                    <textarea id="inDoctor" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Total</textarea>
+                    <textarea id="inTotal" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;">0.0</textarea>
+                </div>
+                <br>
+                
+                <div class="row form-group">
+                    <div class="col col-9"></div>
+                
+                    <textarea id="inToday" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: center;"></textarea>
+                </div>
+                <br><br>
+
+                <div class="row form-group">
+                    <div class="col col-9"></div>
+                
+                    <textarea class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: center;">HOSPITAL</textarea>
+                </div>
+            </form>
+
+
+            <!-- **************************************************************************** -->
+
+
+            <form id="examListForm" style="display: none;" class="form-group p-5 mb-2 bg-white text-dark">      
+                <button type="button" class="close" aria-label="Close" onclick="clearForm()">
+					<span aria-hidden="true">&times;</span>
+                </button>
+                            
+                <div class="row justify-content-md-center">
+                    <label style="font-size: 25px;">Examination of outpatient</label>
+                </div>
+                <br>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Patient ID</textarea>
+                    <textarea id="exampId" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">First Name</textarea>
+                    <textarea id="examfName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Last Name</textarea>
+                    <textarea id="examlName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+                <br>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">Exam date</th>
+                            <th scope="col">Second Exam</th>
+                            <th scope="col">Diagnosis</th>
+                            <th scope="col">Doctor</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="examListInfo">
+                    </tbody>
+                </table>
+            </form>
+
+
+
+            <div id="examBtn" class="row" style="display: none;">
+                <button id="paymentBackBtn" type="button" class="btn btn-primary btn-block" style="width:100px;" onclick="backToExamList()">
+                    <i class="fa fa-chevron-left" aria-hidden="true"></i> Back</button>	
+            </div>
+            <br>
+
+            <form id="outpatientForm" style="display: none;" class="form-group p-5 mb-2 bg-white text-dark">   
+                <div class="row justify-content-md-center">
+                    <label style="font-size: 25px;">Information about payment</label>
+                </div>
+                <br>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Patient ID</textarea>
+                    <textarea id="outpatientId" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Gender</textarea>
+                    <textarea id="outGender" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">First Name</textarea>
+                    <textarea id="outFName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Last Name</textarea>
+                    <textarea id="outLName" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Phone Number</textarea>
+                    <textarea id="outPhone" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Date of birth</textarea>
+                    <textarea id="outDob" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Address</textarea>
+                    <textarea id="outAddr" class="col form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Exam Date</textarea>
+                    <textarea id="outExDate" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Second Exam Date</textarea>
+                    <textarea id="outSecondDate" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Diagnosis</textarea>
+                    <textarea id="outDiagnosis" class="col form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+                </div>
+                <br>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">Drug Name</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Price</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="outpatientInfo">
+                    </tbody>
+                </table>
+                <br>
+
+                <div class="row form-group">
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white;">Doctor Name</textarea>
+                    <textarea id="outDoctor" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;"></textarea>
+
+                    <div class="col col-2"></div>
+
+                    <textarea class="col col-2 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: right;">Total</textarea>
+                    <textarea id="outTotal" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="box-shadow: none; resize: none; background-color: white;">0.0</textarea>
+                </div>
+                <br>
+                
+                <div class="row form-group">
+                    <div class="col col-9"></div>
+                
+                    <textarea id="outToday" class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: center;"></textarea>
+                </div>
+                <br><br>
+
+                <div class="row form-group">
+                    <div class="col col-9"></div>
+                
+                    <textarea class="col col-3 form-control text-dark" rows="1" readOnly="true" aria-lable="With textarea" 
+                    style="border: none; box-shadow: none; resize: none; background-color: white; text-align: center;">HOSPITAL</textarea>
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+</body> 
+</html>

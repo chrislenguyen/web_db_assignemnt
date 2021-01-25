@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>English Test Site</title>
+    <title>Hospital Database</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,35 +35,36 @@
                 <nav class="shadow-sm navbar fixed-top navbar-expand-sm navbar-light bg-light">
                     <div class="container">
                         <a class="navbar-brand" href="index.php?page=home">
-                            <img class="img-fluid" src="assets/images/logoEng.PNG" alt="logo">
+                            <img class="img-fluid" src="assets/images/hospital.png" alt="logo">
                         </a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarResponsive">
                             <ul class="navbar-nav" id="nav_menu">
-                                <li class="nav-item active">
-                                    <a class="nav-link" href="index.php?page=home">Home
+                                <li class="nav-item">
+                                    <a id="home" class="nav-link" href="index.php?page=home">Home
                                         <span class="sr-only">(current)</span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#" id="info_navtab">About</a>
+                                    <a id="search" class="nav-link" href="index.php?page=search" id="info_navtab">Search Patient</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="add" class="nav-link" href="index.php?page=add" id="info_navtab">Add Patient</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="doctor" class="nav-link" href="index.php?page=doctor" id="info_navtab">View doctor</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a id="report" class="nav-link" href="index.php?page=report" id="info_navtab">Report</a>
                                 </li>
                             </ul>
-                            <ul class="navbar-nav ml-auto" id="nav_menu">
-                                <a class="dropdown-item text-primary " id="signup" href="index.php?page=sign_up">Sign Up</a>
-                                <a class="dropdown-item text-white bg-primary " id="login" href="index.php?page=login">Login</a>
-                                <li class="nav-item dropdown">
-                                    <div class="nav-item dropdown show">
-                                        <a id="username" href="" style="display: none;" class="nav-link dropdown-toggle p-3 text-primary" data-toggle="dropdown" aria-expanded="true"></a>
-                                        <div class="dropdown-menu" style="display: none;" id="useroption">
-                                            <a class="dropdown-item" href="index.php?page=result">Profiles</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" id="logout" href="index.php?page=logout" name="logout">Logout</a>
-                                        </div>
-                                    </div>
-                                </li>
+                            <ul class="navbar-nav ml-auto">
+                                <a id="username" href="index.php?page=home" style="display: none;" class="nav-link p-3 text-primary" aria-expanded="true"></a>
+                            </ul>
+                            <ul class="navbar-nav">
+                                <a class="dropdown-item text-white bg-primary" id="logout" style="display: none;" href="index.php?page=logout" name="logout">Logout</a>
                             </ul>
                         </div>
                     </div>
